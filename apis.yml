@@ -40,12 +40,13 @@ tags:
 - Wellness
 - Webhooks
 created: '2026-05-25'
-modified: '2026-05-25'
+modified: '2026-05-30'
 specificationVersion: '0.20'
 apis:
 - aid: healthie:healthie-graphql-api
   name: Healthie GraphQL API
-  description: The Healthie GraphQL API is the single contract behind the entire Healthie platform — the same
+  description: >-
+    The Healthie GraphQL API is the single contract behind the entire Healthie platform — the same
     API that powers the Healthie web, iOS, and Android applications is available to partners building branded
     care experiences. The schema exposes clients, appointments, availability, charting notes, custom forms and
     form-answer groups, care plans, goals, allergies, immunizations, medications, diagnoses, lab orders, CMS-1500
@@ -100,6 +101,9 @@ apis:
     url: https://staging-api.gethealthie.com/graphql
   - type: GraphiQL
     url: https://docs.gethealthie.com/graphiql
+  - type: AsyncAPI
+    name: Healthie Webhooks AsyncAPI 2.6
+    url: https://raw.githubusercontent.com/api-evangelist/healthie/refs/heads/main/asyncapi/healthie-webhooks-asyncapi.yml
 common:
 - type: Website
   url: https://www.gethealthie.com/
@@ -292,8 +296,8 @@ common:
     medications, lab orders, CMS-1500 claims, insurance authorizations, eligibility checks, payments, messaging,
     fax, conversations, and announcements
   - Date-based opt-in API versioning via the `Healthie-GraphQL-API-Version` header — default `2024-06-01`
-  - API-key authentication via `Authorization: Basic` + `AuthorizationSource: API` (plus `AuthorizationShard` for sharded customers)
-  - `createApiKey` GraphQL mutation for programmatic key issuance scoped to individual user accounts
+  - 'API-key authentication via `Authorization: Basic` + `AuthorizationSource: API` (plus `AuthorizationShard` for sharded customers)'
+  - '`createApiKey` GraphQL mutation for programmatic key issuance scoped to individual user accounts'
   - Two-environment model — `staging-api.gethealthie.com` sandbox and `api.gethealthie.com` production with no data transfer between them
   - Query complexity scoring (max 2000) and 25-level depth limit instead of fixed RPS rate limits
   - HMAC-SHA256 signed webhooks with exponential-backoff retry up to 3 days, auto-disable, and email alerts

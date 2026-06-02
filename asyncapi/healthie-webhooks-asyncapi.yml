@@ -1,0 +1,2710 @@
+asyncapi: 2.6.0
+info:
+  title: Healthie Webhooks
+  version: "2026-05-30"
+  description: |
+    Best-effort AsyncAPI 2.6 description of the Healthie webhook surface.
+    Healthie delivers webhook notifications as HTTP POST requests with an
+    `application/json` body whenever a subscribed event occurs on a
+    Healthie account. Each delivery is signed using HTTP Message
+    Signatures (RFC 9421-style) with an HMAC-SHA256 signature whose base
+    string covers the HTTP method, target path, query string, content
+    digest, content type, and content length. The payload itself is a
+    "thin" envelope identifying the affected resource and event; consumers
+    must call back into the Healthie GraphQL API to retrieve the full
+    record using `resource_id` and `resource_id_type`.
+
+    Generated from public documentation at
+    https://docs.gethealthie.com/guides/webhooks and the Event Reference at
+    https://docs.gethealthie.com/guides/webhooks/event-reference/. Not an
+    official spec.
+  contact:
+    name: Healthie Developer Documentation
+    url: https://docs.gethealthie.com/guides/webhooks
+  license:
+    name: Proprietary — Healthie Terms of Service
+    url: https://www.gethealthie.com/terms
+defaultContentType: application/json
+servers:
+  subscriber:
+    url: "{webhookUrl}"
+    protocol: https
+    description: |
+      The HTTPS endpoint registered by the subscriber when creating a
+      Healthie webhook subscription. Healthie POSTs event notifications
+      to this URL. Production deliveries originate from the Healthie
+      egress IP allowlist (52.4.158.130, 3.216.152.234, 54.243.233.84,
+      50.19.211.21). Endpoints that return non-2xx responses are retried
+      with exponential backoff for approximately three days; an email
+      alert is sent after roughly 24 hours of failures and the webhook
+      is auto-disabled after sustained failure.
+    variables:
+      webhookUrl:
+        default: https://example.com/webhooks/healthie
+        description: Subscriber-controlled HTTPS endpoint registered with Healthie.
+channels:
+  healthie/events:
+    description: |
+      Single delivery channel used by Healthie for all webhook
+      notifications. The specific event is identified by the
+      `event_type` field in the JSON body (e.g. `appointment.created`),
+      and the affected record is identified by `resource_id` plus the
+      GraphQL type name in `resource_id_type` (one of `Appointment`,
+      `FormAnswerGroup`, `Entry`, or `Note` per the Healthie docs).
+      Update events also carry a `changed_fields` array enumerating
+      the modified field names.
+    bindings:
+      http:
+        type: request
+        method: POST
+        bindingVersion: 0.3.0
+    publish:
+      operationId: receiveHealthieEvent
+      summary: Receive a Healthie webhook event delivery.
+      description: |
+        Healthie publishes a single message envelope containing the
+        event type and resource identifiers. Subscribers MUST verify
+        the HTTP Message Signature (`Signature`, `Signature-Input`,
+        and `Content-Digest` headers) before processing.
+      message:
+        oneOf:
+          - $ref: "#/components/messages/AppointmentCreated"
+          - $ref: "#/components/messages/AppointmentUpdated"
+          - $ref: "#/components/messages/AppointmentDeleted"
+          - $ref: "#/components/messages/AppointmentParticipantJoined"
+          - $ref: "#/components/messages/AppointmentParticipantLeft"
+          - $ref: "#/components/messages/AppointmentPatientAdded"
+          - $ref: "#/components/messages/AppointmentPatientRemoved"
+          - $ref: "#/components/messages/AppointmentRecordingStarted"
+          - $ref: "#/components/messages/AppointmentRecordingStopped"
+          - $ref: "#/components/messages/AppointmentRecordingCompleted"
+          - $ref: "#/components/messages/AppointmentTranscriptAvailable"
+          - $ref: "#/components/messages/AvailabilityCreated"
+          - $ref: "#/components/messages/AvailabilityUpdated"
+          - $ref: "#/components/messages/AvailabilityDeleted"
+          - $ref: "#/components/messages/PatientCreated"
+          - $ref: "#/components/messages/PatientUpdated"
+          - $ref: "#/components/messages/PatientMerged"
+          - $ref: "#/components/messages/AppliedTagCreated"
+          - $ref: "#/components/messages/AppliedTagDeleted"
+          - $ref: "#/components/messages/CourseMembershipCreated"
+          - $ref: "#/components/messages/CourseMembershipUpdated"
+          - $ref: "#/components/messages/CourseMembershipDeleted"
+          - $ref: "#/components/messages/FeatureToggleCreated"
+          - $ref: "#/components/messages/FeatureToggleUpdated"
+          - $ref: "#/components/messages/FeatureToggleDeleted"
+          - $ref: "#/components/messages/NotificationContactCreated"
+          - $ref: "#/components/messages/NotificationContactUpdated"
+          - $ref: "#/components/messages/NotificationContactDeleted"
+          - $ref: "#/components/messages/NotificationSettingCreated"
+          - $ref: "#/components/messages/NotificationSettingUpdated"
+          - $ref: "#/components/messages/NotificationSettingDeleted"
+          - $ref: "#/components/messages/OtherIdNumberCreated"
+          - $ref: "#/components/messages/OtherIdNumberUpdated"
+          - $ref: "#/components/messages/OtherIdNumberDeleted"
+          - $ref: "#/components/messages/FormAnswerGroupCreated"
+          - $ref: "#/components/messages/FormAnswerGroupDeleted"
+          - $ref: "#/components/messages/FormAnswerGroupSigned"
+          - $ref: "#/components/messages/FormAnswerGroupLocked"
+          - $ref: "#/components/messages/FormAnswerGroupUnlocked"
+          - $ref: "#/components/messages/AppointmentFormAnswerGroupConnectionCreated"
+          - $ref: "#/components/messages/AppointmentFormAnswerGroupConnectionUpdated"
+          - $ref: "#/components/messages/AppointmentFormAnswerGroupConnectionDeleted"
+          - $ref: "#/components/messages/RequestedFormCompletionCreated"
+          - $ref: "#/components/messages/RequestedFormCompletionUpdated"
+          - $ref: "#/components/messages/RequestedFormCompletionDeleted"
+          - $ref: "#/components/messages/CompletedOnboardingItemCreated"
+          - $ref: "#/components/messages/CompletedOnboardingItemUpdated"
+          - $ref: "#/components/messages/CompletedOnboardingItemDeleted"
+          - $ref: "#/components/messages/CustomModuleFormCreated"
+          - $ref: "#/components/messages/CustomModuleFormUpdated"
+          - $ref: "#/components/messages/CustomModuleFormDeleted"
+          - $ref: "#/components/messages/CustomModuleCreated"
+          - $ref: "#/components/messages/CustomModuleUpdated"
+          - $ref: "#/components/messages/CustomModuleDeleted"
+          - $ref: "#/components/messages/GeneratedFormAnswerGroupCreated"
+          - $ref: "#/components/messages/ConversationCreated"
+          - $ref: "#/components/messages/ConversationUpdated"
+          - $ref: "#/components/messages/ConversationMembershipCreated"
+          - $ref: "#/components/messages/ConversationMembershipDeleted"
+          - $ref: "#/components/messages/ConversationMembershipViewed"
+          - $ref: "#/components/messages/MessageCreated"
+          - $ref: "#/components/messages/MessageDeleted"
+          - $ref: "#/components/messages/ScheduledMessageSent"
+          - $ref: "#/components/messages/BillingItemCreated"
+          - $ref: "#/components/messages/BillingItemUpdated"
+          - $ref: "#/components/messages/BillingItemDeleted"
+          - $ref: "#/components/messages/RequestedPaymentCreated"
+          - $ref: "#/components/messages/RequestedPaymentUpdated"
+          - $ref: "#/components/messages/RequestedPaymentDeleted"
+          - $ref: "#/components/messages/RecurringPaymentCreated"
+          - $ref: "#/components/messages/RecurringPaymentUpdated"
+          - $ref: "#/components/messages/ChargeBackCreated"
+          - $ref: "#/components/messages/ChargeBackUpdated"
+          - $ref: "#/components/messages/ChargeBackDeleted"
+          - $ref: "#/components/messages/ClaimSubmissionCreated"
+          - $ref: "#/components/messages/ClaimSubmissionUpdated"
+          - $ref: "#/components/messages/ClaimSubmissionDeleted"
+          - $ref: "#/components/messages/Cms1500Created"
+          - $ref: "#/components/messages/Cms1500Updated"
+          - $ref: "#/components/messages/Cms1500Deleted"
+          - $ref: "#/components/messages/InsuranceAuthorizationCreated"
+          - $ref: "#/components/messages/InsuranceAuthorizationUpdated"
+          - $ref: "#/components/messages/InsuranceAuthorizationDeleted"
+          - $ref: "#/components/messages/PolicyCreated"
+          - $ref: "#/components/messages/PolicyUpdated"
+          - $ref: "#/components/messages/PolicyDeleted"
+          - $ref: "#/components/messages/AcceptedInsurancePlanCreated"
+          - $ref: "#/components/messages/AcceptedInsurancePlanDeleted"
+          - $ref: "#/components/messages/SuperBillCreated"
+          - $ref: "#/components/messages/SuperBillUpdated"
+          - $ref: "#/components/messages/SuperBillDeleted"
+          - $ref: "#/components/messages/StripeCustomerDetailCreated"
+          - $ref: "#/components/messages/StripeCustomerDetailUpdated"
+          - $ref: "#/components/messages/StripeCustomerDetailDeleted"
+          - $ref: "#/components/messages/AllergySensitivityCreated"
+          - $ref: "#/components/messages/AllergySensitivityUpdated"
+          - $ref: "#/components/messages/AllergySensitivityDeleted"
+          - $ref: "#/components/messages/CarePlanCreated"
+          - $ref: "#/components/messages/CarePlanUpdated"
+          - $ref: "#/components/messages/CarePlanDeleted"
+          - $ref: "#/components/messages/CarePlanActivated"
+          - $ref: "#/components/messages/CarePlanDeactivated"
+          - $ref: "#/components/messages/ChartingNoteAddendumCreated"
+          - $ref: "#/components/messages/ChartingNoteAddendumUpdated"
+          - $ref: "#/components/messages/ChartingNoteAddendumDeleted"
+          - $ref: "#/components/messages/DiagnosisCreate"
+          - $ref: "#/components/messages/DiagnosisUpdated"
+          - $ref: "#/components/messages/DiagnosisDeleted"
+          - $ref: "#/components/messages/GoalCreated"
+          - $ref: "#/components/messages/GoalUpdated"
+          - $ref: "#/components/messages/GoalDeleted"
+          - $ref: "#/components/messages/GoalTemplateCreated"
+          - $ref: "#/components/messages/GoalTemplateUpdated"
+          - $ref: "#/components/messages/GoalTemplateDeleted"
+          - $ref: "#/components/messages/GoalHistoryCreated"
+          - $ref: "#/components/messages/GoalHistoryDeleted"
+          - $ref: "#/components/messages/MedicationCreated"
+          - $ref: "#/components/messages/MedicationUpdated"
+          - $ref: "#/components/messages/MedicationDeleted"
+          - $ref: "#/components/messages/LabOrderCreated"
+          - $ref: "#/components/messages/LabOrderUpdated"
+          - $ref: "#/components/messages/LabResultCreated"
+          - $ref: "#/components/messages/LabResultUpdated"
+          - $ref: "#/components/messages/MetricEntryCreated"
+          - $ref: "#/components/messages/MetricEntryUpdated"
+          - $ref: "#/components/messages/MetricEntryDeleted"
+          - $ref: "#/components/messages/ReferralCreated"
+          - $ref: "#/components/messages/ReferralUpdated"
+          - $ref: "#/components/messages/ReferralDeleted"
+          - $ref: "#/components/messages/FamilyHistoryConditionCreated"
+          - $ref: "#/components/messages/FamilyHistoryConditionUpdated"
+          - $ref: "#/components/messages/FamilyHistoryConditionDeleted"
+          - $ref: "#/components/messages/EntryCreated"
+          - $ref: "#/components/messages/EntryUpdated"
+          - $ref: "#/components/messages/EntryDeleted"
+          - $ref: "#/components/messages/PrescriptionUpdated"
+          - $ref: "#/components/messages/ReferringPhysicianCreated"
+          - $ref: "#/components/messages/ReferringPhysicianUpdated"
+          - $ref: "#/components/messages/ReferringPhysicianDeleted"
+          - $ref: "#/components/messages/DosespotNotificationCreated"
+          - $ref: "#/components/messages/DocumentCreated"
+          - $ref: "#/components/messages/DocumentUpdated"
+          - $ref: "#/components/messages/DocumentDeleted"
+          - $ref: "#/components/messages/SentFaxCreated"
+          - $ref: "#/components/messages/SentFaxUpdated"
+          - $ref: "#/components/messages/SentFaxStatusChanged"
+          - $ref: "#/components/messages/ReceivedFaxCreated"
+          - $ref: "#/components/messages/FolderSharingCreated"
+          - $ref: "#/components/messages/FolderSharingDeleted"
+          - $ref: "#/components/messages/TaskCreated"
+          - $ref: "#/components/messages/TaskUpdated"
+          - $ref: "#/components/messages/TaskDeleted"
+          - $ref: "#/components/messages/LocationCreated"
+          - $ref: "#/components/messages/LocationUpdated"
+          - $ref: "#/components/messages/LocationDeleted"
+          - $ref: "#/components/messages/OrganizationInfoCreated"
+          - $ref: "#/components/messages/OrganizationInfoUpdated"
+          - $ref: "#/components/messages/OrganizationInfoDeleted"
+          - $ref: "#/components/messages/OrganizationMemberUpdated"
+          - $ref: "#/components/messages/OrganizationMembershipCreated"
+          - $ref: "#/components/messages/OrganizationMembershipUpdated"
+          - $ref: "#/components/messages/CommentCreated"
+          - $ref: "#/components/messages/CommentUpdated"
+          - $ref: "#/components/messages/CommentDeleted"
+          - $ref: "#/components/messages/ExternalCalendarAuthorizationError"
+          - $ref: "#/components/messages/PatientEducationalResourceUpdated"
+          - $ref: "#/components/messages/PatientEducationalResourceDeleted"
+          - $ref: "#/components/messages/SentNotificationRecordCreated"
+          - $ref: "#/components/messages/SentNotificationRecordUpdated"
+          - $ref: "#/components/messages/TestCreated"
+components:
+  messageTraits:
+    HttpMessageSignedDelivery:
+      headers:
+        type: object
+        required:
+          - Content-Type
+          - Content-Digest
+          - Signature-Input
+          - Signature
+        properties:
+          Content-Type:
+            type: string
+            enum:
+              - application/json
+            description: Body content type used by Healthie for webhook deliveries.
+          Content-Digest:
+            type: string
+            description: |
+              SHA-256 digest of the request body, encoded per the HTTP
+              Message Signatures specification (e.g.
+              `sha-256=:<base64-digest>:`). Subscribers MUST recompute
+              and compare before trusting the payload.
+            example: "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:"
+          Signature-Input:
+            type: string
+            description: |
+              Names the covered components and signature parameters used
+              to construct the signature base string. Per Healthie, the
+              base string covers the HTTP method, path, query string,
+              content digest, content type, and content length.
+            example: 'sig1=("@method" "@path" "@query" "content-digest" "content-type" "content-length");created=1748630400;keyid="healthie-webhook";alg="hmac-sha256"'
+          Signature:
+            type: string
+            description: |
+              HMAC-SHA256 signature of the signature base string, keyed
+              with the shared secret provisioned for the webhook
+              subscription. Encoded per the HTTP Message Signatures
+              specification (e.g. `sig1=:<base64-signature>:`).
+            example: "sig1=:dGVzdC1zaWduYXR1cmUtdmFsdWU=:"
+      bindings:
+        http:
+          bindingVersion: 0.3.0
+  schemas:
+    EventEnvelope:
+      type: object
+      description: |
+        Thin JSON envelope sent by Healthie for every webhook delivery.
+        Consumers identify the affected record via `resource_id` plus
+        `resource_id_type` and dispatch on `event_type`. Update events
+        also carry a `changed_fields` array.
+      required:
+        - resource_id
+        - resource_id_type
+        - event_type
+      properties:
+        resource_id:
+          type: string
+          description: Identifier of the Healthie record that triggered the event.
+        resource_id_type:
+          type: string
+          enum:
+            - Appointment
+            - FormAnswerGroup
+            - Entry
+            - Note
+          description: |
+            GraphQL type name of the resource referenced by
+            `resource_id`. Per the Healthie webhook documentation, the
+            documented values are `Appointment`, `FormAnswerGroup`,
+            `Entry`, and `Note`.
+        event_type:
+          type: string
+          description: Event identifier in `<resource>.<verb>` form (e.g. `appointment.created`).
+        changed_fields:
+          type: array
+          items:
+            type: string
+          description: |
+            For update events, the list of field names that changed
+            relative to the prior version of the resource. Empty or
+            omitted for create/delete events.
+      example:
+        resource_id: "12345"
+        resource_id_type: Appointment
+        event_type: appointment.updated
+        changed_fields:
+          - date
+          - location_id
+  messages:
+    AppointmentCreated:
+      name: AppointmentCreated
+      title: appointment.created
+      summary: An appointment was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment.created
+    AppointmentUpdated:
+      name: AppointmentUpdated
+      title: appointment.updated
+      summary: An appointment was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment.updated
+    AppointmentDeleted:
+      name: AppointmentDeleted
+      title: appointment.deleted
+      summary: An appointment was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment.deleted
+    AppointmentParticipantJoined:
+      name: AppointmentParticipantJoined
+      title: appointment.participant_joined
+      summary: A participant joined an appointment (telehealth).
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment.participant_joined
+    AppointmentParticipantLeft:
+      name: AppointmentParticipantLeft
+      title: appointment.participant_left
+      summary: A participant left an appointment (telehealth).
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment.participant_left
+    AppointmentPatientAdded:
+      name: AppointmentPatientAdded
+      title: appointment.patient_added
+      summary: A patient was added to an appointment.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment.patient_added
+    AppointmentPatientRemoved:
+      name: AppointmentPatientRemoved
+      title: appointment.patient_removed
+      summary: A patient was removed from an appointment.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment.patient_removed
+    AppointmentRecordingStarted:
+      name: AppointmentRecordingStarted
+      title: appointment.recording_started
+      summary: An appointment recording started.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment.recording_started
+    AppointmentRecordingStopped:
+      name: AppointmentRecordingStopped
+      title: appointment.recording_stopped
+      summary: An appointment recording stopped.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment.recording_stopped
+    AppointmentRecordingCompleted:
+      name: AppointmentRecordingCompleted
+      title: appointment.recording_completed
+      summary: An appointment recording finished processing.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment.recording_completed
+    AppointmentTranscriptAvailable:
+      name: AppointmentTranscriptAvailable
+      title: appointment.transcript_available
+      summary: A transcript is available for an appointment recording.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment.transcript_available
+    AvailabilityCreated:
+      name: AvailabilityCreated
+      title: availability.created
+      summary: An availability slot was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: availability.created
+    AvailabilityUpdated:
+      name: AvailabilityUpdated
+      title: availability.updated
+      summary: An availability slot was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: availability.updated
+    AvailabilityDeleted:
+      name: AvailabilityDeleted
+      title: availability.deleted
+      summary: An availability slot was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: availability.deleted
+    PatientCreated:
+      name: PatientCreated
+      title: patient.created
+      summary: A patient (client) record was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: patient.created
+    PatientUpdated:
+      name: PatientUpdated
+      title: patient.updated
+      summary: A patient (client) record was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: patient.updated
+    PatientMerged:
+      name: PatientMerged
+      title: patient.merged
+      summary: Two patient (client) records were merged.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: patient.merged
+    AppliedTagCreated:
+      name: AppliedTagCreated
+      title: applied_tag.created
+      summary: A tag was applied to a resource.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: applied_tag.created
+    AppliedTagDeleted:
+      name: AppliedTagDeleted
+      title: applied_tag.deleted
+      summary: A tag was removed from a resource.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: applied_tag.deleted
+    CourseMembershipCreated:
+      name: CourseMembershipCreated
+      title: course_membership.created
+      summary: A course membership was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: course_membership.created
+    CourseMembershipUpdated:
+      name: CourseMembershipUpdated
+      title: course_membership.updated
+      summary: A course membership was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: course_membership.updated
+    CourseMembershipDeleted:
+      name: CourseMembershipDeleted
+      title: course_membership.deleted
+      summary: A course membership was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: course_membership.deleted
+    FeatureToggleCreated:
+      name: FeatureToggleCreated
+      title: feature_toggle.created
+      summary: A feature toggle was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: feature_toggle.created
+    FeatureToggleUpdated:
+      name: FeatureToggleUpdated
+      title: feature_toggle.updated
+      summary: A feature toggle was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: feature_toggle.updated
+    FeatureToggleDeleted:
+      name: FeatureToggleDeleted
+      title: feature_toggle.deleted
+      summary: A feature toggle was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: feature_toggle.deleted
+    NotificationContactCreated:
+      name: NotificationContactCreated
+      title: notification_contact.created
+      summary: A notification contact was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: notification_contact.created
+    NotificationContactUpdated:
+      name: NotificationContactUpdated
+      title: notification_contact.updated
+      summary: A notification contact was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: notification_contact.updated
+    NotificationContactDeleted:
+      name: NotificationContactDeleted
+      title: notification_contact.deleted
+      summary: A notification contact was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: notification_contact.deleted
+    NotificationSettingCreated:
+      name: NotificationSettingCreated
+      title: notification_setting.created
+      summary: A notification setting was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: notification_setting.created
+    NotificationSettingUpdated:
+      name: NotificationSettingUpdated
+      title: notification_setting.updated
+      summary: A notification setting was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: notification_setting.updated
+    NotificationSettingDeleted:
+      name: NotificationSettingDeleted
+      title: notification_setting.deleted
+      summary: A notification setting was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: notification_setting.deleted
+    OtherIdNumberCreated:
+      name: OtherIdNumberCreated
+      title: other_id_number.created
+      summary: An other ID number was created on a user.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: other_id_number.created
+    OtherIdNumberUpdated:
+      name: OtherIdNumberUpdated
+      title: other_id_number.updated
+      summary: An other ID number was updated on a user.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: other_id_number.updated
+    OtherIdNumberDeleted:
+      name: OtherIdNumberDeleted
+      title: other_id_number.deleted
+      summary: An other ID number was deleted from a user.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: other_id_number.deleted
+    FormAnswerGroupCreated:
+      name: FormAnswerGroupCreated
+      title: form_answer_group.created
+      summary: A form answer group (form submission) was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: form_answer_group.created
+    FormAnswerGroupDeleted:
+      name: FormAnswerGroupDeleted
+      title: form_answer_group.deleted
+      summary: A form answer group was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: form_answer_group.deleted
+    FormAnswerGroupSigned:
+      name: FormAnswerGroupSigned
+      title: form_answer_group.signed
+      summary: A form answer group was signed.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: form_answer_group.signed
+    FormAnswerGroupLocked:
+      name: FormAnswerGroupLocked
+      title: form_answer_group.locked
+      summary: A form answer group was locked.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: form_answer_group.locked
+    FormAnswerGroupUnlocked:
+      name: FormAnswerGroupUnlocked
+      title: form_answer_group.unlocked
+      summary: A form answer group was unlocked.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: form_answer_group.unlocked
+    AppointmentFormAnswerGroupConnectionCreated:
+      name: AppointmentFormAnswerGroupConnectionCreated
+      title: appointment_form_answer_group_connection.created
+      summary: A form was linked to an appointment.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment_form_answer_group_connection.created
+    AppointmentFormAnswerGroupConnectionUpdated:
+      name: AppointmentFormAnswerGroupConnectionUpdated
+      title: appointment_form_answer_group_connection.updated
+      summary: An appointment-to-form linkage was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment_form_answer_group_connection.updated
+    AppointmentFormAnswerGroupConnectionDeleted:
+      name: AppointmentFormAnswerGroupConnectionDeleted
+      title: appointment_form_answer_group_connection.deleted
+      summary: An appointment-to-form linkage was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: appointment_form_answer_group_connection.deleted
+    RequestedFormCompletionCreated:
+      name: RequestedFormCompletionCreated
+      title: requested_form_completion.created
+      summary: A requested form completion was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: requested_form_completion.created
+    RequestedFormCompletionUpdated:
+      name: RequestedFormCompletionUpdated
+      title: requested_form_completion.updated
+      summary: A requested form completion was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: requested_form_completion.updated
+    RequestedFormCompletionDeleted:
+      name: RequestedFormCompletionDeleted
+      title: requested_form_completion.deleted
+      summary: A requested form completion was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: requested_form_completion.deleted
+    CompletedOnboardingItemCreated:
+      name: CompletedOnboardingItemCreated
+      title: completed_onboarding_item.created
+      summary: A completed onboarding item was recorded.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: completed_onboarding_item.created
+    CompletedOnboardingItemUpdated:
+      name: CompletedOnboardingItemUpdated
+      title: completed_onboarding_item.updated
+      summary: A completed onboarding item was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: completed_onboarding_item.updated
+    CompletedOnboardingItemDeleted:
+      name: CompletedOnboardingItemDeleted
+      title: completed_onboarding_item.deleted
+      summary: A completed onboarding item was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: completed_onboarding_item.deleted
+    CustomModuleFormCreated:
+      name: CustomModuleFormCreated
+      title: custom_module_form.created
+      summary: A custom module form (template) was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: custom_module_form.created
+    CustomModuleFormUpdated:
+      name: CustomModuleFormUpdated
+      title: custom_module_form.updated
+      summary: A custom module form was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: custom_module_form.updated
+    CustomModuleFormDeleted:
+      name: CustomModuleFormDeleted
+      title: custom_module_form.deleted
+      summary: A custom module form was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: custom_module_form.deleted
+    CustomModuleCreated:
+      name: CustomModuleCreated
+      title: custom_module.created
+      summary: A custom module (form field) was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: custom_module.created
+    CustomModuleUpdated:
+      name: CustomModuleUpdated
+      title: custom_module.updated
+      summary: A custom module was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: custom_module.updated
+    CustomModuleDeleted:
+      name: CustomModuleDeleted
+      title: custom_module.deleted
+      summary: A custom module was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: custom_module.deleted
+    GeneratedFormAnswerGroupCreated:
+      name: GeneratedFormAnswerGroupCreated
+      title: generated_form_answer_group.created
+      summary: A generated form answer group was created (e.g. by automation).
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: generated_form_answer_group.created
+    ConversationCreated:
+      name: ConversationCreated
+      title: conversation.created
+      summary: A messaging conversation was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: conversation.created
+    ConversationUpdated:
+      name: ConversationUpdated
+      title: conversation.updated
+      summary: A messaging conversation was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: conversation.updated
+    ConversationMembershipCreated:
+      name: ConversationMembershipCreated
+      title: conversation_membership.created
+      summary: A user was added to a conversation.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: conversation_membership.created
+    ConversationMembershipDeleted:
+      name: ConversationMembershipDeleted
+      title: conversation_membership.deleted
+      summary: A user was removed from a conversation.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: conversation_membership.deleted
+    ConversationMembershipViewed:
+      name: ConversationMembershipViewed
+      title: conversation_membership.viewed
+      summary: A conversation membership was marked viewed (read receipt).
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: conversation_membership.viewed
+    MessageCreated:
+      name: MessageCreated
+      title: message.created
+      summary: A message was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: message.created
+    MessageDeleted:
+      name: MessageDeleted
+      title: message.deleted
+      summary: A message was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: message.deleted
+    ScheduledMessageSent:
+      name: ScheduledMessageSent
+      title: scheduled_message.sent
+      summary: A scheduled message was sent.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: scheduled_message.sent
+    BillingItemCreated:
+      name: BillingItemCreated
+      title: billing_item.created
+      summary: A billing item was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: billing_item.created
+    BillingItemUpdated:
+      name: BillingItemUpdated
+      title: billing_item.updated
+      summary: A billing item was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: billing_item.updated
+    BillingItemDeleted:
+      name: BillingItemDeleted
+      title: billing_item.deleted
+      summary: A billing item was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: billing_item.deleted
+    RequestedPaymentCreated:
+      name: RequestedPaymentCreated
+      title: requested_payment.created
+      summary: A requested payment was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: requested_payment.created
+    RequestedPaymentUpdated:
+      name: RequestedPaymentUpdated
+      title: requested_payment.updated
+      summary: A requested payment was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: requested_payment.updated
+    RequestedPaymentDeleted:
+      name: RequestedPaymentDeleted
+      title: requested_payment.deleted
+      summary: A requested payment was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: requested_payment.deleted
+    RecurringPaymentCreated:
+      name: RecurringPaymentCreated
+      title: recurring_payment.created
+      summary: A recurring payment was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: recurring_payment.created
+    RecurringPaymentUpdated:
+      name: RecurringPaymentUpdated
+      title: recurring_payment.updated
+      summary: A recurring payment was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: recurring_payment.updated
+    ChargeBackCreated:
+      name: ChargeBackCreated
+      title: charge_back.created
+      summary: A chargeback was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: charge_back.created
+    ChargeBackUpdated:
+      name: ChargeBackUpdated
+      title: charge_back.updated
+      summary: A chargeback was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: charge_back.updated
+    ChargeBackDeleted:
+      name: ChargeBackDeleted
+      title: charge_back.deleted
+      summary: A chargeback was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: charge_back.deleted
+    ClaimSubmissionCreated:
+      name: ClaimSubmissionCreated
+      title: claim_submission.created
+      summary: A claim submission was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: claim_submission.created
+    ClaimSubmissionUpdated:
+      name: ClaimSubmissionUpdated
+      title: claim_submission.updated
+      summary: A claim submission was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: claim_submission.updated
+    ClaimSubmissionDeleted:
+      name: ClaimSubmissionDeleted
+      title: claim_submission.deleted
+      summary: A claim submission was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: claim_submission.deleted
+    Cms1500Created:
+      name: Cms1500Created
+      title: cms1500.created
+      summary: A CMS-1500 claim was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: cms1500.created
+    Cms1500Updated:
+      name: Cms1500Updated
+      title: cms1500.updated
+      summary: A CMS-1500 claim was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: cms1500.updated
+    Cms1500Deleted:
+      name: Cms1500Deleted
+      title: cms1500.deleted
+      summary: A CMS-1500 claim was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: cms1500.deleted
+    InsuranceAuthorizationCreated:
+      name: InsuranceAuthorizationCreated
+      title: insurance_authorization.created
+      summary: An insurance authorization was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: insurance_authorization.created
+    InsuranceAuthorizationUpdated:
+      name: InsuranceAuthorizationUpdated
+      title: insurance_authorization.updated
+      summary: An insurance authorization was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: insurance_authorization.updated
+    InsuranceAuthorizationDeleted:
+      name: InsuranceAuthorizationDeleted
+      title: insurance_authorization.deleted
+      summary: An insurance authorization was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: insurance_authorization.deleted
+    PolicyCreated:
+      name: PolicyCreated
+      title: policy.created
+      summary: An insurance policy was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: policy.created
+    PolicyUpdated:
+      name: PolicyUpdated
+      title: policy.updated
+      summary: An insurance policy was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: policy.updated
+    PolicyDeleted:
+      name: PolicyDeleted
+      title: policy.deleted
+      summary: An insurance policy was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: policy.deleted
+    AcceptedInsurancePlanCreated:
+      name: AcceptedInsurancePlanCreated
+      title: accepted_insurance_plan.created
+      summary: An accepted insurance plan was added.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: accepted_insurance_plan.created
+    AcceptedInsurancePlanDeleted:
+      name: AcceptedInsurancePlanDeleted
+      title: accepted_insurance_plan.deleted
+      summary: An accepted insurance plan was removed.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: accepted_insurance_plan.deleted
+    SuperBillCreated:
+      name: SuperBillCreated
+      title: super_bill.created
+      summary: A super bill was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: super_bill.created
+    SuperBillUpdated:
+      name: SuperBillUpdated
+      title: super_bill.updated
+      summary: A super bill was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: super_bill.updated
+    SuperBillDeleted:
+      name: SuperBillDeleted
+      title: super_bill.deleted
+      summary: A super bill was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: super_bill.deleted
+    StripeCustomerDetailCreated:
+      name: StripeCustomerDetailCreated
+      title: stripe_customer_detail.created
+      summary: A Stripe customer detail was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: stripe_customer_detail.created
+    StripeCustomerDetailUpdated:
+      name: StripeCustomerDetailUpdated
+      title: stripe_customer_detail.updated
+      summary: A Stripe customer detail was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: stripe_customer_detail.updated
+    StripeCustomerDetailDeleted:
+      name: StripeCustomerDetailDeleted
+      title: stripe_customer_detail.deleted
+      summary: A Stripe customer detail was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: stripe_customer_detail.deleted
+    AllergySensitivityCreated:
+      name: AllergySensitivityCreated
+      title: allergy_sensitivity.created
+      summary: An allergy/sensitivity record was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: allergy_sensitivity.created
+    AllergySensitivityUpdated:
+      name: AllergySensitivityUpdated
+      title: allergy_sensitivity.updated
+      summary: An allergy/sensitivity record was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: allergy_sensitivity.updated
+    AllergySensitivityDeleted:
+      name: AllergySensitivityDeleted
+      title: allergy_sensitivity.deleted
+      summary: An allergy/sensitivity record was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: allergy_sensitivity.deleted
+    CarePlanCreated:
+      name: CarePlanCreated
+      title: care_plan.created
+      summary: A care plan was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: care_plan.created
+    CarePlanUpdated:
+      name: CarePlanUpdated
+      title: care_plan.updated
+      summary: A care plan was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: care_plan.updated
+    CarePlanDeleted:
+      name: CarePlanDeleted
+      title: care_plan.deleted
+      summary: A care plan was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: care_plan.deleted
+    CarePlanActivated:
+      name: CarePlanActivated
+      title: care_plan.activated
+      summary: A care plan was activated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: care_plan.activated
+    CarePlanDeactivated:
+      name: CarePlanDeactivated
+      title: care_plan.deactivated
+      summary: A care plan was deactivated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: care_plan.deactivated
+    ChartingNoteAddendumCreated:
+      name: ChartingNoteAddendumCreated
+      title: charting_note_addendum.created
+      summary: A charting note addendum was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: charting_note_addendum.created
+    ChartingNoteAddendumUpdated:
+      name: ChartingNoteAddendumUpdated
+      title: charting_note_addendum.updated
+      summary: A charting note addendum was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: charting_note_addendum.updated
+    ChartingNoteAddendumDeleted:
+      name: ChartingNoteAddendumDeleted
+      title: charting_note_addendum.deleted
+      summary: A charting note addendum was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: charting_note_addendum.deleted
+    DiagnosisCreate:
+      name: DiagnosisCreate
+      title: diagnosis.create
+      summary: A diagnosis was created (documented spelling preserves Healthie's `create` verb).
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: diagnosis.create
+    DiagnosisUpdated:
+      name: DiagnosisUpdated
+      title: diagnosis.updated
+      summary: A diagnosis was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: diagnosis.updated
+    DiagnosisDeleted:
+      name: DiagnosisDeleted
+      title: diagnosis.deleted
+      summary: A diagnosis was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: diagnosis.deleted
+    GoalCreated:
+      name: GoalCreated
+      title: goal.created
+      summary: A goal was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: goal.created
+    GoalUpdated:
+      name: GoalUpdated
+      title: goal.updated
+      summary: A goal was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: goal.updated
+    GoalDeleted:
+      name: GoalDeleted
+      title: goal.deleted
+      summary: A goal was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: goal.deleted
+    GoalTemplateCreated:
+      name: GoalTemplateCreated
+      title: goal_template.created
+      summary: A goal template was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: goal_template.created
+    GoalTemplateUpdated:
+      name: GoalTemplateUpdated
+      title: goal_template.updated
+      summary: A goal template was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: goal_template.updated
+    GoalTemplateDeleted:
+      name: GoalTemplateDeleted
+      title: goal_template.deleted
+      summary: A goal template was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: goal_template.deleted
+    GoalHistoryCreated:
+      name: GoalHistoryCreated
+      title: goal_history.created
+      summary: A goal history entry was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: goal_history.created
+    GoalHistoryDeleted:
+      name: GoalHistoryDeleted
+      title: goal_history.deleted
+      summary: A goal history entry was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: goal_history.deleted
+    MedicationCreated:
+      name: MedicationCreated
+      title: medication.created
+      summary: A medication record was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: medication.created
+    MedicationUpdated:
+      name: MedicationUpdated
+      title: medication.updated
+      summary: A medication record was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: medication.updated
+    MedicationDeleted:
+      name: MedicationDeleted
+      title: medication.deleted
+      summary: A medication record was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: medication.deleted
+    LabOrderCreated:
+      name: LabOrderCreated
+      title: lab_order.created
+      summary: A lab order was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: lab_order.created
+    LabOrderUpdated:
+      name: LabOrderUpdated
+      title: lab_order.updated
+      summary: A lab order was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: lab_order.updated
+    LabResultCreated:
+      name: LabResultCreated
+      title: lab_result.created
+      summary: A lab result was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: lab_result.created
+    LabResultUpdated:
+      name: LabResultUpdated
+      title: lab_result.updated
+      summary: A lab result was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: lab_result.updated
+    MetricEntryCreated:
+      name: MetricEntryCreated
+      title: metric_entry.created
+      summary: A metric entry was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: metric_entry.created
+    MetricEntryUpdated:
+      name: MetricEntryUpdated
+      title: metric_entry.updated
+      summary: A metric entry was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: metric_entry.updated
+    MetricEntryDeleted:
+      name: MetricEntryDeleted
+      title: metric_entry.deleted
+      summary: A metric entry was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: metric_entry.deleted
+    ReferralCreated:
+      name: ReferralCreated
+      title: referral.created
+      summary: A referral was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: referral.created
+    ReferralUpdated:
+      name: ReferralUpdated
+      title: referral.updated
+      summary: A referral was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: referral.updated
+    ReferralDeleted:
+      name: ReferralDeleted
+      title: referral.deleted
+      summary: A referral was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: referral.deleted
+    FamilyHistoryConditionCreated:
+      name: FamilyHistoryConditionCreated
+      title: family_history_condition.created
+      summary: A family history condition was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: family_history_condition.created
+    FamilyHistoryConditionUpdated:
+      name: FamilyHistoryConditionUpdated
+      title: family_history_condition.updated
+      summary: A family history condition was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: family_history_condition.updated
+    FamilyHistoryConditionDeleted:
+      name: FamilyHistoryConditionDeleted
+      title: family_history_condition.deleted
+      summary: A family history condition was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: family_history_condition.deleted
+    EntryCreated:
+      name: EntryCreated
+      title: entry.created
+      summary: An entry (journal/log) was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: entry.created
+    EntryUpdated:
+      name: EntryUpdated
+      title: entry.updated
+      summary: An entry was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: entry.updated
+    EntryDeleted:
+      name: EntryDeleted
+      title: entry.deleted
+      summary: An entry was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: entry.deleted
+    PrescriptionUpdated:
+      name: PrescriptionUpdated
+      title: prescription.updated
+      summary: A prescription was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: prescription.updated
+    ReferringPhysicianCreated:
+      name: ReferringPhysicianCreated
+      title: referring_physician.created
+      summary: A referring physician was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: referring_physician.created
+    ReferringPhysicianUpdated:
+      name: ReferringPhysicianUpdated
+      title: referring_physician.updated
+      summary: A referring physician was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: referring_physician.updated
+    ReferringPhysicianDeleted:
+      name: ReferringPhysicianDeleted
+      title: referring_physician.deleted
+      summary: A referring physician was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: referring_physician.deleted
+    DosespotNotificationCreated:
+      name: DosespotNotificationCreated
+      title: dosespot_notification.created
+      summary: A DoseSpot e-prescribing notification was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: dosespot_notification.created
+    DocumentCreated:
+      name: DocumentCreated
+      title: document.created
+      summary: A document was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: document.created
+    DocumentUpdated:
+      name: DocumentUpdated
+      title: document.updated
+      summary: A document was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: document.updated
+    DocumentDeleted:
+      name: DocumentDeleted
+      title: document.deleted
+      summary: A document was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: document.deleted
+    SentFaxCreated:
+      name: SentFaxCreated
+      title: sent_fax.created
+      summary: A sent fax record was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: sent_fax.created
+    SentFaxUpdated:
+      name: SentFaxUpdated
+      title: sent_fax.updated
+      summary: A sent fax record was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: sent_fax.updated
+    SentFaxStatusChanged:
+      name: SentFaxStatusChanged
+      title: sent_fax.status_changed
+      summary: A sent fax's status changed.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: sent_fax.status_changed
+    ReceivedFaxCreated:
+      name: ReceivedFaxCreated
+      title: received_fax.created
+      summary: A received fax record was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: received_fax.created
+    FolderSharingCreated:
+      name: FolderSharingCreated
+      title: folder_sharing.created
+      summary: A folder sharing entry was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: folder_sharing.created
+    FolderSharingDeleted:
+      name: FolderSharingDeleted
+      title: folder_sharing.deleted
+      summary: A folder sharing entry was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: folder_sharing.deleted
+    TaskCreated:
+      name: TaskCreated
+      title: task.created
+      summary: A task was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: task.created
+    TaskUpdated:
+      name: TaskUpdated
+      title: task.updated
+      summary: A task was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: task.updated
+    TaskDeleted:
+      name: TaskDeleted
+      title: task.deleted
+      summary: A task was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: task.deleted
+    LocationCreated:
+      name: LocationCreated
+      title: location.created
+      summary: A location was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: location.created
+    LocationUpdated:
+      name: LocationUpdated
+      title: location.updated
+      summary: A location was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: location.updated
+    LocationDeleted:
+      name: LocationDeleted
+      title: location.deleted
+      summary: A location was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: location.deleted
+    OrganizationInfoCreated:
+      name: OrganizationInfoCreated
+      title: organization_info.created
+      summary: Organization info was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: organization_info.created
+    OrganizationInfoUpdated:
+      name: OrganizationInfoUpdated
+      title: organization_info.updated
+      summary: Organization info was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: organization_info.updated
+    OrganizationInfoDeleted:
+      name: OrganizationInfoDeleted
+      title: organization_info.deleted
+      summary: Organization info was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: organization_info.deleted
+    OrganizationMemberUpdated:
+      name: OrganizationMemberUpdated
+      title: organization_member.updated
+      summary: An organization member was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: organization_member.updated
+    OrganizationMembershipCreated:
+      name: OrganizationMembershipCreated
+      title: organization_membership.created
+      summary: An organization membership was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: organization_membership.created
+    OrganizationMembershipUpdated:
+      name: OrganizationMembershipUpdated
+      title: organization_membership.updated
+      summary: An organization membership was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: organization_membership.updated
+    CommentCreated:
+      name: CommentCreated
+      title: comment.created
+      summary: A comment was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: comment.created
+    CommentUpdated:
+      name: CommentUpdated
+      title: comment.updated
+      summary: A comment was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: comment.updated
+    CommentDeleted:
+      name: CommentDeleted
+      title: comment.deleted
+      summary: A comment was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: comment.deleted
+    ExternalCalendarAuthorizationError:
+      name: ExternalCalendarAuthorizationError
+      title: external_calendar.authorization_error
+      summary: An external calendar sync hit an authorization error.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: external_calendar.authorization_error
+    PatientEducationalResourceUpdated:
+      name: PatientEducationalResourceUpdated
+      title: patient_educational_resource.updated
+      summary: A patient educational resource was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: patient_educational_resource.updated
+    PatientEducationalResourceDeleted:
+      name: PatientEducationalResourceDeleted
+      title: patient_educational_resource.deleted
+      summary: A patient educational resource was deleted.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: patient_educational_resource.deleted
+    SentNotificationRecordCreated:
+      name: SentNotificationRecordCreated
+      title: sent_notification_record.created
+      summary: A sent notification record was created.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: sent_notification_record.created
+    SentNotificationRecordUpdated:
+      name: SentNotificationRecordUpdated
+      title: sent_notification_record.updated
+      summary: A sent notification record was updated.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: sent_notification_record.updated
+    TestCreated:
+      name: TestCreated
+      title: test.created
+      summary: A synthetic test event emitted when validating a webhook endpoint.
+      contentType: application/json
+      traits:
+        - $ref: "#/components/messageTraits/HttpMessageSignedDelivery"
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/EventEnvelope"
+          - type: object
+            properties:
+              event_type:
+                const: test.created
