@@ -1,12 +1,6 @@
 aid: healthie
 name: Healthie
-description: Healthie is a cloud, API-first EHR and practice management platform purpose-built for digital health
-  startups, virtual care companies, and modern clinical practices. Healthie packages an EHR, scheduling, charting,
-  telehealth, intake forms, care plans, online programs, messaging, billing, claims (CMS-1500 / ClaimMD), and
-  patient portal behind a single GraphQL API and modular SDKs that power both the Healthie product UI and partner
-  applications. Healthie targets the digital health ecosystem with a "buy the EHR, build the experience" model
-  — the same API that backs the Healthie web and mobile apps is fully exposed to customers building branded
-  patient and provider experiences on top of the platform.
+description: Healthie is a cloud, API-first EHR and practice management platform purpose-built for digital health startups, virtual care companies, and modern clinical practices. Healthie packages an EHR, scheduling, charting, telehealth, intake forms, care plans, online programs, messaging, billing, claims (CMS-1500 / ClaimMD), and patient portal behind a single GraphQL API and modular SDKs that power both the Healthie product UI and partner applications. Healthie targets the digital health ecosystem with a "buy the EHR, build the experience" model — the same API that backs the Healthie web and mobile apps is fully exposed to customers building branded patient and provider experiences on top of the platform.
 image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
 url: https://raw.githubusercontent.com/api-evangelist/healthie/refs/heads/main/apis.yml
 type: Index
@@ -104,6 +98,8 @@ apis:
   - type: AsyncAPI
     name: Healthie Webhooks AsyncAPI 2.6
     url: https://raw.githubusercontent.com/api-evangelist/healthie/refs/heads/main/asyncapi/healthie-webhooks-asyncapi.yml
+  - url: graphql/healthie-graphql.md
+    type: GraphQL
 common:
 - type: Website
   url: https://www.gethealthie.com/
@@ -292,9 +288,7 @@ common:
 - type: Features
   data:
   - GraphQL API powering Healthie's own EHR, mobile, and patient portal — same contract for first-party and partners
-  - Resources span clients, appointments, availability, charting, forms, programs, goals, allergies, immunizations,
-    medications, lab orders, CMS-1500 claims, insurance authorizations, eligibility checks, payments, messaging,
-    fax, conversations, and announcements
+  - Resources span clients, appointments, availability, charting, forms, programs, goals, allergies, immunizations, medications, lab orders, CMS-1500 claims, insurance authorizations, eligibility checks, payments, messaging, fax, conversations, and announcements
   - Date-based opt-in API versioning via the `Healthie-GraphQL-API-Version` header — default `2024-06-01`
   - 'API-key authentication via `Authorization: Basic` + `AuthorizationSource: API` (plus `AuthorizationShard` for sharded customers)'
   - '`createApiKey` GraphQL mutation for programmatic key issuance scoped to individual user accounts'
@@ -306,8 +300,7 @@ common:
   - Modular TypeScript / JavaScript SDKs on npm under `@healthie/sdk`
   - Healthie Dev Assist — official MCP server for AI-assisted Healthie development
   - Sample Booking Widget reference implementation on GitHub
-  - Healthie Harbor app marketplace with Google Fit, Apple Health, Fitbit, Stripe, Zoom, ClaimMD, Fullscript Labs,
-    and Change Healthcare integrations
+  - Healthie Harbor app marketplace with Google Fit, Apple Health, Fitbit, Stripe, Zoom, ClaimMD, Fullscript Labs, and Change Healthcare integrations
   - HIPAA and PCI compliant infrastructure operating ~2.5B API calls/month at 99.99% uptime
   - SMART on FHIR / interoperability and US-based data residency options for enterprise
   sources:
