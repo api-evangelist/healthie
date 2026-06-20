@@ -1,7 +1,7 @@
 aid: healthie
 name: Healthie
 description: Healthie is a cloud, API-first EHR and practice management platform purpose-built for digital health startups, virtual care companies, and modern clinical practices. Healthie packages an EHR, scheduling, charting, telehealth, intake forms, care plans, online programs, messaging, billing, claims (CMS-1500 / ClaimMD), and patient portal behind a single GraphQL API and modular SDKs that power both the Healthie product UI and partner applications. Healthie targets the digital health ecosystem with a "buy the EHR, build the experience" model — the same API that backs the Healthie web and mobile apps is fully exposed to customers building branded patient and provider experiences on top of the platform.
-image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
 url: https://raw.githubusercontent.com/api-evangelist/healthie/refs/heads/main/apis.yml
 type: Index
 kind: contract
@@ -51,7 +51,7 @@ apis:
     Rate limits combine a dynamic per-account request rate with a per-query complexity score (max 2000) and
     depth limit (max 25). Sandbox is fully isolated at `https://staging-api.gethealthie.com/graphql`; production
     runs at `https://api.gethealthie.com/graphql`.
-  image: https://kinlane-productions2.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
   humanURL: https://docs.gethealthie.com/
   baseURL: https://api.gethealthie.com/graphql
   tags:
