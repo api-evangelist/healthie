@@ -124,10 +124,10 @@ common:
   url: https://docs.gethealthie.com/guides/webhooks
 - type: Environments
   url: https://docs.gethealthie.com/guides/api-concepts/environments
-- type: SDK
+- type: SDKs
   name: '@healthie/sdk (npm)'
   url: https://www.npmjs.com/org/healthie
-- type: Tool
+- type: Tools
   name: Healthie Dev Assist (MCP)
   url: https://github.com/healthie/healthie-dev-assist
 - type: CodeExamples
