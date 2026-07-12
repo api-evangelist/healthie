@@ -101,6 +101,8 @@ apis:
   - url: graphql/healthie-graphql.md
     type: GraphQL
 common:
+- type: DomainSecurity
+  url: security/healthie-domain-security.yml
 - type: Website
   url: https://www.gethealthie.com/
 - type: Portal
