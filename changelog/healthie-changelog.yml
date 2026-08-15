@@ -1,0 +1,92 @@
+generated: '2026-08-14'
+method: searched
+source: https://docs.gethealthie.com/guides/api-concepts/changelog
+url: https://docs.gethealthie.com/guides/api-concepts/changelog
+scheme: dated, weekly
+cadence: weekly (Friday-dated entries)
+entry_count_published: 52
+oldest_published_entry: '2025-07-04'
+latest_entry: '2026-07-31'
+note: >-
+  Healthie runs TWO separate change surfaces and they are not interchangeable. This changelog tracks
+  only NON-BREAKING, accretive schema changes, which land in every API version immediately including
+  the 2024-06-01 baseline. Breaking changes are recorded separately in the Version History and require
+  opting into a dated Healthie-GraphQL-API-Version header — see lifecycle/healthie-lifecycle.yml.
+  The changelog is unusually machine-friendly for a docs page: entries are written as normalized
+  schema diffs ("Type X was added", "Field Y was added to object type Z", "Argument A added to field
+  Q.r"), which reads like the output of a schema-diff tool rather than hand-written release notes.
+change_classes_tracked:
+- New fields on existing types
+- New types (objects, inputs, enums, unions, scalars)
+- New optional arguments on existing fields
+- New enum values
+- Deprecations (fields and arguments marked for future removal)
+- Other non-breaking schema modifications
+related:
+  version_history: https://docs.gethealthie.com/guides/api-concepts/versioning
+  deprecations: https://docs.gethealthie.com/guides/api-concepts/deprecations
+  product_changelog: https://www.gethealthie.com/blog
+  product_changelog_note: >-
+    Healthie also publishes a monthly product-update post on its blog (e.g. "July 2026 Healthie
+    Product Updates"), which covers the application rather than the API contract.
+window: recent 8 entries
+entries:
+- date: '2026-07-31'
+  breaking: false
+  highlights:
+  - Types DosespotRoleEnum, UpdateGeneratedSummaryInput, UpdateGeneratedSummaryPayload added
+  - Mutation.updateGeneratedSummary added — editing of AI-generated clinical summaries
+  - GeneratedSummary gains edited_at and edited_by, making human edits to AI output attributable
+  - metadata (JSON) added to AllergySensitivity, Diagnosis, MedicationType and their create/update
+    inputs
+  - DoseSpot gains has_valid_credentials and role; IntegrationOptionType gains integration_request_status
+  - RequestIntegrationInput.integration_name relaxed from String! to String, and integration_option_id added
+- date: '2026-07-24'
+  breaking: false
+  highlights:
+  - rxcui added to DosageType and MedicationType; ndc added to MedicationType — standard RxNorm and
+    NDC drug identifiers now exposed on the medication surface
+  - exclude_group_appointments argument added to Query.appointments and Query.appointmentsCount
+  - start_date / end_date arguments added to Query.formAnswerGroupsCount
+  - DOCUMENT_SHARING enum value added to SentWebhookResourceType
+- date: '2026-07-17'
+  breaking: false
+  highlights:
+  - EmbeddedZoomCredentials type added
+  - Mutation.updateAppointmentFormAnswerGroupConnection added, with matching input/payload types
+  - Action enum gains APPOINTMENT_LINKED, APPOINTMENT_UNLINKED, APPOINTMENT_RELINKED
+  - CustomModuleForm.is_scribe_form added — forms can now be flagged as AI-scribe targets
+  - CptCode.fee_per_unit added
+- date: '2026-07-10'
+  breaking: false
+  highlights:
+  - metadata added to BillingItem
+  - DrugAllergenTypeEnum gains ROUTED_DOSE_FORM_DRUG and FOOD_AND_ENVIRONMENT_ALLERGEN
+  - start_date / end_date arguments added to Query.formAnswerGroups
+- date: '2026-07-03'
+  breaking: false
+  highlights:
+  - OrganizationConfigurationType added with Mutation.updateOrganizationConfiguration
+  - Organization.configuration added
+  - OrganizationMembership gains granular appointment permissions (can_edit_own_appointments,
+    can_edit_others_appointments, can_delete_own_appointments, can_delete_others_appointments)
+- date: '2026-06-26'
+  breaking: false
+  deprecations: true
+  highlights:
+  - 'Change Healthcare wind-down begins in the schema: ClaimDestinationIntegration.change_health and
+    EligibilityCheckService.change_health both deprecated ("ChangeHealth claims integration has been
+    discontinued", "Use claim_md instead")'
+  - InsurancePlan.change_healthcare_eligibility_payer_id deprecated
+  - FullscriptEntrypoint and EntryImageStyleEnum types added
+- date: '2026-06-19'
+  breaking: false
+  highlights: [Non-breaking schema additions — see the published changelog for the itemized diff.]
+- date: '2026-06-12'
+  breaking: false
+  highlights: [Non-breaking schema additions — see the published changelog for the itemized diff.]
+x-evidence:
+  fetched: '2026-08-14'
+  urls:
+  - {url: 'https://docs.gethealthie.com/guides/api-concepts/changelog', http_status: 200}
+  - {url: 'https://docs.gethealthie.com/guides/api-concepts/versioning', http_status: 200}

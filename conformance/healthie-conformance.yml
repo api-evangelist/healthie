@@ -1,0 +1,175 @@
+generated: '2026-08-14'
+method: searched
+source:
+- https://www.gethealthie.com/security
+- https://trust.gethealthie.com
+- https://docs.gethealthie.com/guides/api-concepts/
+- graphql/healthie-schema.graphql
+note: >-
+  Two kinds of claim are recorded separately below. `certifications` are audited compliance programs
+  Healthie publishes and can be asked to evidence. `standards` are technical/protocol conformance
+  assertions, derived from the published documentation and the GraphQL schema captured in this
+  repository. A false entry is a recorded absence, not a criticism — it tells an integrator what they
+  cannot assume.
+certifications:
+- id: hipaa
+  name: HIPAA
+  conforms: true
+  scope: Privacy, Security and Breach Notification Rules; Administrative and Physical Safeguards
+  evidence: https://www.gethealthie.com/security
+  baa_available: true
+  baa_url: https://www.gethealthie.com/baa
+- id: soc2
+  name: SOC 2
+  conforms: true
+  type: Type 2
+  evidence: https://www.gethealthie.com/security
+  note: Healthie's security page cites SOC 2 across all five trust services criteria (security,
+    availability, processing integrity, confidentiality, privacy).
+- id: hitrust
+  name: HITRUST CSF
+  conforms: true
+  level: r2
+  evidence: https://www.gethealthie.com/security
+  note: Certified against the HITRUST CSF, which maps over 50 underlying security and privacy
+    standards including HIPAA, NIST and GDPR.
+- id: onc-health-it
+  name: ONC Health IT Certification
+  conforms: true
+  evidence: https://www.gethealthie.com/security
+  note: >-
+    The Healthie Health IT Module is certified by an ONC-ACB against the ONC Certification Criteria
+    for Health IT. This is the certification that matters most for US clinical interoperability and is
+    rare among the API-first EHR cohort.
+- id: pci-dss
+  name: PCI DSS
+  conforms: partial
+  level: Service Provider Level 1
+  evidence: https://www.gethealthie.com/security
+  note: >-
+    The certification is held by Healthie's PAYMENT PROCESSOR, not by Healthie itself. Healthie's own
+    wording is "Healthie's payment processor is certified as Payment Card Industry (PCI) Service
+    Provider Level 1". Recorded as partial so the distinction is not lost.
+- id: gdpr
+  name: GDPR
+  conforms: true
+  evidence: https://www.gethealthie.com/security
+- id: pipeda
+  name: PIPEDA
+  conforms: true
+  jurisdiction: Canada
+  evidence: https://www.gethealthie.com/security
+trust_center: https://trust.gethealthie.com
+security_practices_published:
+- Annual third-party penetration testing
+- Annual disaster recovery tabletop exercises
+- Annual risk assessments
+- Quarterly vulnerability scans
+- Data stored in SOC Type 1 and Type 2 certified facilities
+- 256-bit TLS in transit
+standards:
+- id: graphql
+  conforms: true
+  evidence: >-
+    The entire public API is GraphQL. The schema was retrieved by a standard introspection query
+    against https://staging-api.gethealthie.com/graphql and is saved at graphql/healthie-schema.graphql.
+- id: graphql-error-spec-7.1.2
+  conforms: partial
+  evidence: >-
+    Healthie states it targets GraphQL specification section 7.1.2 for errors, and in the same
+    document acknowledges that some 404 Not Found responses do not conform. Self-declared partial.
+  source: https://docs.gethealthie.com/guides/api-concepts/error-handling
+- id: rfc9110-http-semantics
+  conforms: partial
+  evidence: >-
+    Healthie states it strives to follow RFC 9110 and returns "the most appropriate HTTP response code
+    where applicable"; the known 404 non-conformance is the documented exception.
+- id: graphql-cursor-connections
+  conforms: true
+  evidence: >-
+    PageInfo with start_cursor/end_cursor/has_next_page/has_previous_page, a Cursor scalar, and an
+    `after` argument. Migration to Connection-type pagination is being carried out across breaking
+    versions 2025-01-01, 2025-10-15 and 2026-01-01.
+- id: rfc9421-http-message-signatures
+  conforms: partial
+  evidence: >-
+    Webhook deliveries carry Content-Digest, Signature-Input and Signature headers with an HMAC-SHA256
+    signature over method, path, query, content digest, content type and content length. The header
+    set follows the HTTP Message Signatures shape; Healthie does not claim formal RFC 9421
+    conformance and the signature base construction is described in prose rather than by reference to
+    the RFC.
+  source: https://docs.gethealthie.com/guides/webhooks
+- id: iso8601
+  conforms: true
+  evidence: ISO8601Date, ISO8601DateTime and ISO8601Duration custom scalars, standardized in API
+    version 2024-07-01.
+- id: actioncable-anycable
+  conforms: true
+  evidence: >-
+    GraphQL subscriptions are delivered over the ActionCable protocol via AnyCable. Healthie states
+    explicitly that this differs from the Apollo websocket subprotocol and that Apollo's default
+    subscription connection cannot be used.
+  source: https://docs.gethealthie.com/guides/websockets-and-subscriptions/getting-started/
+- id: x12-cms1500
+  conforms: true
+  evidence: >-
+    CMS-1500 professional claims are first-class schema objects (Cms1500, Claim, ClaimLocation,
+    AdjustmentGroup enum with the standard CO/OA/PR/PI claim adjustment groups), submitted through
+    the ClaimMD clearinghouse.
+- id: icd10-cpt
+  conforms: true
+  evidence: Healthie states it uses standard transactional codes (CPT, ICD-10) monitored against
+    up-to-date databases; icdCodes / cptCodes queries exist in the schema.
+- id: oauth2
+  conforms: false
+  evidence: >-
+    No OAuth 2.0 anywhere. Authentication is a static per-user API key in an Authorization header.
+    /.well-known/oauth-authorization-server returns 404 on every host.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404 on every host.
+- id: fhir
+  conforms: unverified
+  evidence: >-
+    Healthie markets "SMART on FHIR / interoperability" for enterprise on gethealthie.com/api, but no
+    FHIR endpoint, capability statement, or FHIR resource shape appears in the public GraphQL schema
+    or the developer documentation. The claim could not be verified from any public surface and is
+    recorded as unverified rather than true or false.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: No application/problem+json. Errors use the GraphQL errors[] array plus a per-mutation
+    messages[] FieldError list.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: Deprecation is expressed via the GraphQL @deprecated directive and the docs, never as a
+    Sunset or Deprecation HTTP header.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404 on every host (see well-known/healthie-well-known.yml).
+- id: rfc9727-api-catalog
+  conforms: false
+  evidence: /.well-known/api-catalog returns 404 on every host.
+- id: openapi
+  conforms: false
+  evidence: >-
+    Healthie publishes no OpenAPI. Probes of /openapi.json, /openapi.yaml, /swagger.json, /api-docs,
+    /docs and /v1/openapi.json against api.gethealthie.com and docs.gethealthie.com all returned 404.
+    Not a defect for a GraphQL-native provider — recorded so the absence is explicit.
+- id: asyncapi
+  conforms: false
+  evidence: >-
+    Healthie publishes no AsyncAPI. The two AsyncAPI documents in this repository are API Evangelist
+    derivations from Healthie's published webhook and subscription documentation, not provider
+    artifacts.
+related:
+- security/healthie-trust-center.yml
+- security/healthie-domain-security.yml
+- well-known/healthie-well-known.yml
+x-evidence:
+  fetched: '2026-08-14'
+  urls:
+  - {url: 'https://www.gethealthie.com/security', http_status: 200}
+  - {url: 'https://trust.gethealthie.com', http_status: 200}
+  - {url: 'https://www.gethealthie.com/baa', http_status: 200}
+  - {url: 'https://api.gethealthie.com/openapi.json', http_status: 404}
+  - {url: 'https://api.gethealthie.com/.well-known/security.txt', http_status: 404}

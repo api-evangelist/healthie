@@ -1,0 +1,114 @@
+generated: '2026-08-14'
+method: searched
+source: https://docs.gethealthie.com/guides/api-concepts/authentication
+docs: https://docs.gethealthie.com/guides/api-concepts/authentication
+note: >-
+  Healthie publishes no OpenAPI, so this profile could not be produced by
+  0-working/derive-authentication.py (which reads OpenAPI securitySchemes). It was read directly from
+  the published authentication guide and cross-checked against the GraphQL schema captured in
+  graphql/healthie-schema.graphql (the createApiKey mutation and ApiKey type exist verbatim).
+summary:
+  types: [apiKey]
+  api_key_in: [header, query]
+  oauth2_flows: []
+  oauth2: false
+  oidc: false
+  mtls: false
+  model: static per-user API key; permissions are inherited from the Healthie user account the key
+    is attached to
+schemes:
+- name: HealthieApiKey
+  type: apiKey
+  in: header
+  parameter_name: Authorization
+  format: 'Basic <API_KEY>'
+  required: true
+  description: >-
+    The API key is sent in the Authorization header using the literal scheme word "Basic" followed by
+    the raw key. Despite the scheme name this is NOT HTTP Basic authentication — the value is the API
+    key itself, not a base64 user:password pair.
+  source: https://docs.gethealthie.com/guides/api-concepts/authentication
+- name: AuthorizationSource
+  type: apiKey
+  in: header
+  parameter_name: AuthorizationSource
+  format: 'API'
+  required: true
+  description: >-
+    Constant discriminator header that must accompany every authenticated API request. Distinguishes
+    API-key traffic from Healthie's own first-party session traffic.
+  source: https://docs.gethealthie.com/guides/api-concepts/authentication
+- name: AuthorizationShard
+  type: apiKey
+  in: header
+  parameter_name: AuthorizationShard
+  format: '<SHARD_AUTHORIZATION_ID>'
+  required: conditional
+  description: >-
+    Required only for customers whose data is hosted in a dedicated Healthie shard. The shard ID is
+    not self-service — Healthie issues it on request to hello@gethealthie.com.
+  source: https://docs.gethealthie.com/guides/api-concepts/authentication
+- name: WebsocketToken
+  type: apiKey
+  in: query
+  parameter_name: token
+  format: 'wss://ws.gethealthie.com/subscriptions?token=<API_KEY>'
+  required: true
+  applies_to: GraphQL subscriptions over WebSocket
+  description: >-
+    The WebSocket protocol has no header phase, so Healthie carries the API key as a URL query
+    parameter on the subscription connection. Note the security consequence: a long-lived PHI-bearing
+    credential travels in a URL and is therefore exposed to proxy and connection logs in a way the
+    header-based REST/GraphQL path is not.
+  source: https://docs.gethealthie.com/guides/websockets-and-subscriptions/getting-started/
+scopes:
+  model: account-inherited
+  oauth_scopes: false
+  description: >-
+    Healthie has no OAuth scope surface. An API key is scoped to exactly one Healthie user account
+    and takes on that account's permissions and behaviours — actions performed with a key are
+    attributed to that user in audit logs and notifications. Access is therefore narrowed by
+    provisioning the underlying user account's role and permissions, not by requesting scopes.
+  patterns:
+  - name: service-account key
+    description: One key tied to a purpose-built admin/service user account. Recommended by Healthie
+      for backend and data-focused integrations.
+  - name: per-user key
+    description: >-
+      A key per end user. Recommended by Healthie when building headless/custom user interfaces, so
+      that audit logging, notifications and defaults mirror how Healthie's own front end behaves.
+key_management:
+  self_service: partial
+  programmatic_issuance:
+    mutation: createApiKey
+    inputs:
+    - name (optional, user-defined label)
+    - user_id (required)
+    returns:
+    - api_key
+    - 'api_key_object { id, displayable_key, created_at }'
+    - 'messages { field, message }'
+    verified_in: graphql/healthie-schema.graphql
+    gate: >-
+      Issuing keys for OTHER users must be enabled by Healthie per account — the docs direct
+      integrators to contact hello@gethealthie.com to have it turned on.
+  listing:
+    queries: [apiKeys, apiKeysCount]
+  multiple_keys_per_account: true
+  rotation_policy_published: false
+  expiry_published: false
+gaps:
+- No OAuth 2.0 or OpenID Connect. Third-party applications cannot obtain delegated, user-consented,
+  scope-limited access to a practice's Healthie data — an integrator holds a full-permission
+  long-lived key instead.
+- No published key rotation or expiry policy, and no documented revocation endpoint beyond the
+  account UI.
+- No /.well-known/openid-configuration or /.well-known/oauth-authorization-server (both 404 — see
+  well-known/healthie-well-known.yml).
+- The API key doubles as the WebSocket credential and is placed in the query string.
+x-evidence:
+  fetched: '2026-08-14'
+  urls:
+  - {url: 'https://docs.gethealthie.com/guides/api-concepts/authentication', http_status: 200}
+  - {url: 'https://docs.gethealthie.com/guides/websockets-and-subscriptions/getting-started/', http_status: 200}
+  - {url: 'https://staging-api.gethealthie.com/graphql', http_status: 200, note: introspection confirming createApiKey/ApiKey}

@@ -2,16 +2,25 @@ aid: healthie
 name: Healthie
 description: Healthie is a cloud, API-first EHR and practice management platform purpose-built for digital health startups, virtual care companies, and modern clinical practices. Healthie packages an EHR, scheduling, charting, telehealth, intake forms, care plans, online programs, messaging, billing, claims (CMS-1500 / ClaimMD), and patient portal behind a single GraphQL API and modular SDKs that power both the Healthie product UI and partner applications. Healthie targets the digital health ecosystem with a "buy the EHR, build the experience" model — the same API that backs the Healthie web and mobile apps is fully exposed to customers building branded patient and provider experiences on top of the platform.
 accessModel:
-  pricing: unknown
-  onboarding: unknown
-  trial: false
-  try_now: false
+  pricing: paid
+  onboarding: sales
+  trial: true
+  try_now: true
   public: false
-  label: Unknown
-  confidence: low
-  source: []
-  generated: '2026-07-22'
-  method: derived
+  label: Paid (free trial) · Sales-gated API access
+  confidence: high
+  source:
+  - https://www.gethealthie.com/pricing
+  - https://www.gethealthie.com/plus/api-for-digital-health-startups
+  - https://docs.gethealthie.com/guides/api-concepts/environments
+  note: >-
+    The four published practice plans (Core / Essentials / Plus / Group) are self-serve and carry a
+    14-day Plus trial with no credit card required, but NONE of them includes GraphQL API access.
+    Programmatic access is sold separately as Healthie+ with no published price, and the sandbox is
+    provisioned by Healthie rather than self-serve — so from an API buyer's perspective the
+    onboarding is sales-gated even though the product itself is not.
+  generated: '2026-08-14'
+  method: searched
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/healthie.png
 url: https://raw.githubusercontent.com/api-evangelist/healthie/refs/heads/main/apis.yml
 type: Index
@@ -45,7 +54,7 @@ tags:
 - Wellness
 - Webhooks
 created: '2026-05-25'
-modified: '2026-05-30'
+modified: '2026-08-14'
 specificationVersion: '0.20'
 apis:
 - aid: healthie:healthie-graphql-api
@@ -109,11 +118,117 @@ apis:
   - type: AsyncAPI
     name: Healthie Webhooks AsyncAPI 2.6
     url: https://raw.githubusercontent.com/api-evangelist/healthie/refs/heads/main/asyncapi/healthie-webhooks-asyncapi.yml
+  - type: AsyncAPI
+    name: Healthie GraphQL Subscriptions AsyncAPI 2.6
+    url: asyncapi/healthie-subscriptions-asyncapi.yml
   - url: graphql/healthie-graphql.md
     type: GraphQL
+  - type: GraphQL
+    name: Healthie GraphQL Schema (SDL)
+    url: graphql/healthie-schema.graphql
+  - type: APIReference
+    name: GraphQL Schema Reference
+    url: https://docs.gethealthie.com/reference
+  - type: Authentication
+    name: Healthie Authentication Profile
+    url: authentication/healthie-authentication.yml
+  - type: Conventions
+    url: conventions/healthie-conventions.yml
+  - type: ErrorCatalog
+    url: errors/healthie-error-codes.yml
+  - type: RateLimits
+    name: Healthie Rate Limits
+    url: rate-limits/healthie-rate-limits.yml
+  - type: DataModel
+    url: data-model/healthie-data-model.yml
+  - type: Sandbox
+    name: Healthie Sandbox Profile
+    url: sandbox/healthie-sandbox.yml
+  - type: Lifecycle
+    url: lifecycle/healthie-lifecycle.yml
+  - type: ChangeLog
+    name: Healthie API Changelog
+    url: changelog/healthie-changelog.yml
 common:
+- type: TrustCenter
+  url: security/healthie-trust-center.yml
 - type: DomainSecurity
   url: security/healthie-domain-security.yml
+- type: Compliance
+  name: Security & Compliance — HIPAA, SOC 2 Type 2, HITRUST r2, ONC Certified, GDPR, PIPEDA
+  url: https://www.gethealthie.com/security
+- type: Conformance
+  url: conformance/healthie-conformance.yml
+- type: APIReference
+  name: GraphQL Schema Reference
+  url: https://docs.gethealthie.com/reference
+- type: GraphQL
+  name: Healthie GraphQL Schema (SDL)
+  url: graphql/healthie-schema.graphql
+- type: Authentication
+  name: Healthie Authentication Profile
+  url: authentication/healthie-authentication.yml
+- type: Conventions
+  url: conventions/healthie-conventions.yml
+- type: ErrorCatalog
+  url: errors/healthie-error-codes.yml
+- type: RateLimits
+  name: Healthie Rate Limits
+  url: rate-limits/healthie-rate-limits.yml
+- type: DataModel
+  url: data-model/healthie-data-model.yml
+- type: Lifecycle
+  url: lifecycle/healthie-lifecycle.yml
+- type: Deprecation
+  name: API Deprecations — minimum six months notice
+  url: https://docs.gethealthie.com/guides/api-concepts/deprecations
+- type: ChangeLog
+  name: Healthie API Changelog
+  url: changelog/healthie-changelog.yml
+- type: Sandbox
+  name: Healthie Sandbox Profile
+  url: sandbox/healthie-sandbox.yml
+- type: Packages
+  url: packages/healthie-packages.yml
+- type: Components
+  name: Healthie React Components
+  url: components/healthie-components.yml
+- type: MCPServer
+  name: Healthie Dev Assist (local stdio)
+  url: mcp/healthie-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/healthie-tool-crosswalk.yml
+- type: AgentSkill
+  name: Healthie Agent Skills
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/healthie-llms.txt
+- type: AsyncAPI
+  name: Healthie GraphQL Subscriptions AsyncAPI 2.6
+  url: asyncapi/healthie-subscriptions-asyncapi.yml
+- type: Plans
+  name: Healthie Plans & Pricing
+  url: plans/healthie-plans-pricing.yml
+- type: DeveloperPortal
+  name: Healthie API & Platform
+  url: https://www.gethealthie.com/api
+- type: Support
+  name: Healthie Help Center
+  url: https://help.gethealthie.com/
+- type: Roadmap
+  name: Healthie Product Portal — In Development
+  url: https://portal.productboard.com/gethealthie/1-healthie-product-portal/tabs/4-in-development
+- type: SignUp
+  url: https://secure.gethealthie.com/users/sign_up/provider
+- type: Login
+  url: https://secure.gethealthie.com/users/sign_in
+- type: TermsOfService
+  url: https://www.gethealthie.com/terms
+- type: PrivacyPolicy
+  url: https://www.gethealthie.com/privacy
+- type: Integrations
+  name: Healthie Harbor
+  url: https://harbor.gethealthie.com/
 - type: Website
   url: https://www.gethealthie.com/
 - type: Portal
@@ -332,3 +447,8 @@ maintainers:
   email: info@apievangelist.com
   X: apievangelist
   url: https://apievangelist.com
+x-enrichment:
+  date: '2026-08-14'
+  status: enriched
+  artifacts_added: 25
+  pass: local-v1

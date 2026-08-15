@@ -1,0 +1,95 @@
+generated: '2026-08-14'
+method: searched
+source: https://docs.gethealthie.com/guides/api-concepts/rate-limits
+docs: https://docs.gethealthie.com/guides/api-concepts/rate-limits
+note: >-
+  Healthie governs load with GraphQL cost controls rather than a published requests-per-second
+  budget. Two of the three limits are exact, documented numbers; the third — the request-rate limit
+  itself — is explicitly undocumented and dynamic, which is the single most important thing for an
+  agent to know here.
+limit_count: 3
+limits:
+- id: request-rate
+  scope: per-account
+  window: unspecified
+  limit: null
+  burst: null
+  published: false
+  status_code_on_exhaustion: null
+  error_code: TOO_MANY_REQUESTS
+  error_transport: GraphQL errors[] array
+  error_message: 'Too many requests. Please try again later.'
+  description: >-
+    Healthie limits how many requests an account may make in a period, but publishes NO number.
+    The docs state the limit is "subject to dynamic adjustment" and varies with the endpoint, the
+    operation type, and current system load. An integrator therefore cannot size a batch job in
+    advance; the documented mitigation is error handling plus retry logic.
+  evidence: 'docs: "These limits are subject to dynamic adjustment to maintain optimal system performance."'
+- id: query-complexity
+  scope: per-request
+  window: per-query
+  limit: 2000
+  unit: complexity points
+  published: true
+  description: >-
+    Every query is scored before execution. Scalar fields cost little; object fields and connections
+    cost more, and a connection's cost is MULTIPLIED by the requested page size (`first` / `last`).
+    When no page size is supplied the calculation assumes a default of 100, so an unpaginated
+    connection is the usual way to hit this ceiling.
+  error_message: 'Query has complexity of {n}, which exceeds max complexity of 2000'
+  worked_example: >-
+    users(first: 3) { nodes { id appointments { id notes } } } scores 14. The same query with no
+    `first` argument scores 402, because the default page size of 100 is applied.
+  provider_commentary: >-
+    Healthie states it has "never encountered an intentional query with a complexity cost exceeding
+    1600", i.e. the ceiling is set well above normal usage.
+- id: query-depth
+  scope: per-request
+  window: per-query
+  limit: 25
+  unit: nesting levels
+  published: true
+  description: >-
+    Maximum nesting depth of a single query. Fragments and inline fragments count toward the depth
+    calculation. The root query is depth 0.
+  error_message: 'Query has depth of {n}, which exceeds max depth of 25'
+response_headers:
+  published: false
+  headers: []
+  note: >-
+    Healthie publishes NO rate-limit response headers. There is no X-RateLimit-*, no RateLimit-*
+    (RFC 9331 style) and no documented Retry-After. The only runtime signal is the error payload
+    itself, after the request has already been rejected. This is the material gap for agent use: a
+    client cannot read remaining quota, cannot read a reset time, and cannot compute a backoff
+    interval from the response — it can only retry blindly. Healthie's own "Monitoring your usage"
+    section confirms this, offering only "checking response messages that contain limit information"
+    and "testing complex queries in development".
+  checked: '2026-08-14'
+status_code_on_exhaustion:
+  http: 200
+  note: >-
+    Healthie is a GraphQL API and returns limit violations inside the GraphQL errors[] array. The
+    error-handling guide states Healthie "responds with the most appropriate HTTP response code where
+    applicable" and acknowledges some responses do not conform to the GraphQL spec, so a client must
+    inspect the body rather than trust the status line.
+error_examples:
+- condition: request rate exceeded
+  body: '{"errors":[{"message":"Too many requests. Please try again later.","extensions":{"code":"TOO_MANY_REQUESTS"}}]}'
+- condition: complexity exceeded
+  body: '{"errors":[{"message":"Query has complexity of 2274, which exceeds max complexity of 2000"}]}'
+- condition: depth exceeded
+  body: '{"errors":[{"message":"Query has depth of 30, which exceeds max depth of 25"}]}'
+mitigations_published:
+- Request only the fields you need.
+- Always pass a reasonable `first` / `last` page size to connections.
+- Split large operations into multiple smaller queries.
+- Flatten nesting where possible.
+- Use aliases when requesting the same field multiple times with different arguments.
+related:
+- conventions/healthie-conventions.yml
+- errors/healthie-error-codes.yml
+x-evidence:
+  fetched: '2026-08-14'
+  urls:
+  - {url: 'https://docs.gethealthie.com/guides/api-concepts/rate-limits', http_status: 200}
+  - {url: 'https://docs.gethealthie.com/guides/api-concepts/error-handling', http_status: 200}

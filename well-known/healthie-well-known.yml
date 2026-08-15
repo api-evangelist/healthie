@@ -1,0 +1,57 @@
+generated: '2026-08-14'
+method: probed
+source: live GET of each /.well-known/ path on every Healthie host in apis.yml
+note: >-
+  Every /.well-known/ path returned 404 on every Healthie host. Healthie serves no RFC 9116
+  security.txt, no OIDC discovery document, no RFC 8414 OAuth authorization-server metadata, no
+  RFC 9727 api-catalog and no ai-plugin.json. This is a recorded ABSENCE, not a presence — no
+  WellKnown or SecurityTxt pointer is wired into apis.yml from this file. The 404s on
+  www.gethealthie.com return an HTML body ("Invalid .well-known request") from the Webflow edge
+  and the 404s on docs.gethealthie.com return the Astro/Starlight 404 shell; neither is a
+  document, and both are recorded as misses.
+hits: 0
+hosts:
+- host: https://api.gethealthie.com
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+  - {path: /.well-known/agent-card.json, status: 404}
+  - {path: /.well-known/agent.json, status: 404}
+- host: https://staging-api.gethealthie.com
+  documents:
+  - {path: /.well-known/security.txt, status: 404}
+  - {path: /.well-known/openid-configuration, status: 404}
+  - {path: /.well-known/oauth-authorization-server, status: 404}
+  - {path: /.well-known/oauth-protected-resource, status: 404}
+  - {path: /.well-known/api-catalog, status: 404}
+  - {path: /.well-known/ai-plugin.json, status: 404}
+- host: https://www.gethealthie.com
+  documents:
+  - {path: /.well-known/security.txt, status: 404, body: HTML "Invalid .well-known request"}
+  - {path: /.well-known/openid-configuration, status: 404, body: HTML "Invalid .well-known request"}
+  - {path: /.well-known/oauth-authorization-server, status: 404, body: HTML "Invalid .well-known request"}
+  - {path: /.well-known/oauth-protected-resource, status: 404, body: HTML "Invalid .well-known request"}
+  - {path: /.well-known/api-catalog, status: 404, body: HTML "Invalid .well-known request"}
+  - {path: /.well-known/ai-plugin.json, status: 404, body: HTML "Invalid .well-known request"}
+  - {path: /.well-known/agent-card.json, status: 404, body: HTML "Invalid .well-known request"}
+  - {path: /.well-known/agent.json, status: 404, body: HTML "Invalid .well-known request"}
+- host: https://docs.gethealthie.com
+  documents:
+  - {path: /.well-known/security.txt, status: 404, body: Astro/Starlight 404 HTML shell}
+  - {path: /.well-known/openid-configuration, status: 404, body: Astro/Starlight 404 HTML shell}
+  - {path: /.well-known/oauth-authorization-server, status: 404, body: Astro/Starlight 404 HTML shell}
+  - {path: /.well-known/oauth-protected-resource, status: 404, body: Astro/Starlight 404 HTML shell}
+  - {path: /.well-known/api-catalog, status: 404, body: Astro/Starlight 404 HTML shell}
+  - {path: /.well-known/ai-plugin.json, status: 404, body: Astro/Starlight 404 HTML shell}
+  - {path: /.well-known/agent-card.json, status: 404, body: Astro/Starlight 404 HTML shell}
+  - {path: /.well-known/agent.json, status: 404, body: Astro/Starlight 404 HTML shell}
+remediation: >-
+  Healthie authenticates with a static API key rather than OAuth, so the OAuth/OIDC discovery
+  documents are genuinely not applicable. A security.txt (RFC 9116) at
+  https://www.gethealthie.com/.well-known/security.txt would be the highest-value single addition:
+  Healthie holds PHI, is HITRUST and SOC 2 certified, and publishes no vulnerability-reporting
+  address anywhere on its public surface.

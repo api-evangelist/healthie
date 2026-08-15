@@ -1,0 +1,92 @@
+generated: '2026-08-14'
+method: searched
+source: https://registry.npmjs.org/ + https://docs.gethealthie.com/guides/react-sdks/
+note: >-
+  Healthie ships first-party client libraries only for the browser/React tier. There is no
+  first-party server-side SDK for Ruby, Python, PHP, Go, Java, .NET or Rust — a search of
+  RubyGems, PyPI, Packagist, pkg.go.dev, Maven Central, NuGet and crates.io returned no
+  Healthie-published package. Server-side integrators call the GraphQL endpoint directly with
+  any HTTP/GraphQL client, which is what the Healthie docs instruct. The MCP server
+  (healthie-dev-assist) is distributed by git clone rather than through a registry, so it has
+  no registry metadata to read and is catalogued in mcp/healthie-mcp.yml instead.
+registries_searched:
+- npm
+- PyPI
+- RubyGems
+- Packagist
+- pkg.go.dev
+- Maven Central
+- NuGet
+- crates.io
+package_count: 2
+packages:
+- language: javascript
+  registry: npm
+  name: '@healthie/sdk'
+  url: https://www.npmjs.com/package/@healthie/sdk
+  install: npm install @healthie/sdk
+  official: true
+  version: 1.5.4
+  published: '2026-08-03'
+  release_count: 50
+  license: See LICENSE file
+  description: >-
+    Healthie React SDK — pre-built React components for Chat, Forms, and Booking & Buying
+    (Calendar and Packages) that talk to the Healthie GraphQL API.
+  docs: https://docs.gethealthie.com/guides/react-sdks/
+  source: https://registry.npmjs.org/@healthie/sdk
+- language: javascript
+  registry: npm
+  name: '@healthie/chat'
+  url: https://www.npmjs.com/package/@healthie/chat
+  install: npm install @healthie/chat
+  official: true
+  version: 1.1.14
+  published: '2023-12-18'
+  release_count: 14
+  license: See LICENSE file
+  description: React SDK for Healthie Chat.
+  status: superseded
+  note: >-
+    Last published 2023-12-18 — more than two and a half years before this pass, and predating
+    every Healthie API version from 2024-07-01 onward. The Chat capability has since been folded
+    into the consolidated @healthie/sdk package, which the current docs are the only one to
+    reference. Treat this package as superseded rather than current.
+  source: https://registry.npmjs.org/@healthie/chat
+not_found:
+- registry: RubyGems
+  query: healthie
+  result: no first-party package (search returned only unrelated gems)
+- registry: PyPI
+  query: healthie / gethealthie
+  result: 'no first-party package (both project JSON endpoints returned HTTP 404)'
+- registry: Packagist
+  query: healthie
+  result: no first-party package
+- registry: crates.io
+  query: healthie
+  result: no first-party crate
+- registry: Maven Central
+  query: healthie
+  result: no first-party artifact
+- registry: pkg.go.dev / proxy.golang.org
+  query: github.com/healthie/healthie-go
+  result: 'no first-party module (HTTP 404)'
+name_collisions:
+- name: Healthie.NET.* (Api, Abstractions, DependencyInjection, Dashboard, Quartz, CosmosDb, Mcp, AI,
+    Relational, Alerting)
+  registry: nuget
+  official: false
+  latest_seen: 4.1.1
+  note: >-
+    NOT Healthie the EHR. Healthie.NET is an unrelated ASP.NET Core health-CHECK / uptime-monitoring
+    library authored by Ivan Vydrin (projectUrl https://healthie-dotnet.dev/, tags health-check,
+    healthchecks, monitoring, watchdog, uptime). Recorded here so a later pass does not credit
+    Healthie with a .NET SDK it does not publish.
+third_party_seen:
+- name: '@awell-health/healthie-sdk'
+  registry: npm
+  official: false
+  latest_seen: 1.0.9
+  published: '2025-01-22'
+  note: Published by Awell Health, an integration partner — not by Healthie.

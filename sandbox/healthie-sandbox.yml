@@ -1,0 +1,103 @@
+generated: '2026-08-14'
+method: searched
+source: https://docs.gethealthie.com/guides/api-concepts/environments
+docs: https://docs.gethealthie.com/guides/api-concepts/environments
+model: two fully isolated environments
+description: >-
+  Healthie runs a Sandbox and a Production environment that are completely separate. Healthie cannot
+  copy data between them, and record IDs differ across them — the docs warn explicitly against
+  hard-coding IDs before moving from sandbox to production. Every example in the Healthie
+  documentation targets the sandbox endpoint. There is no "test mode" flag or test-key prefix: the
+  environment is chosen by the hostname you call.
+environments:
+- name: Sandbox
+  graphql: https://staging-api.gethealthie.com/graphql
+  websocket: wss://ws.staging.gethealthie.com/subscriptions
+  purpose: testing and development only, not for production use
+  self_service_signup: false
+  signup_note: >-
+    Sandbox access is provisioned by Healthie as part of an API/Enterprise engagement rather than
+    self-serve from the pricing page.
+- name: Production
+  graphql: https://api.gethealthie.com/graphql
+  websocket: wss://ws.gethealthie.com/subscriptions
+key_separation:
+  test_key_prefix: null
+  live_key_prefix: null
+  note: >-
+    Healthie API keys carry no environment prefix. A key is bound to a user account inside one
+    environment, so pointing the same key at the other hostname simply fails to authenticate. There is
+    no visual way to tell a sandbox key from a production key by inspection — a real operational risk
+    that a prefix convention (as used by Stripe's sk_test_/sk_live_) would remove.
+schema_parity: true
+schema_parity_note: >-
+  The sandbox serves the same GraphQL schema as production. graphql/healthie-schema.graphql in this
+  repository was captured by anonymous introspection of the sandbox endpoint, which is open, whereas
+  the production endpoint refuses anonymous introspection (HTTP 500).
+feature_availability:
+  note: Published matrix of which integrations work in the sandbox.
+  features:
+  - {feature: Change Healthcare E-Labs, available: false}
+  - {feature: Faxing, available: false}
+  - {feature: FitBit, available: true}
+  - {feature: Stripe, available: true}
+  - {feature: Withings, available: false}
+  - {feature: Zoom, available: false}
+  - {feature: ICD + CPT codes, available: limited}
+test_data:
+  note: >-
+    Healthie publishes NO magic test identifiers, test card numbers, test patient records or seeded
+    fixtures of its own. Test values come from the third-party integrations that are enabled in the
+    sandbox.
+  values:
+  - source: Stripe
+    kind: test bank account
+    instruction: >-
+      Payments can be exercised in the sandbox. Healthie prompts you to add a bank account in the
+      Healthie portal; use Stripe's published test data for the bank details and any U.S. address.
+    reference: https://docs.stripe.com/testing
+    known_error: >-
+      "Your destination account needs to have at least one of the following capabilities enabled:
+      transfers, crypto_transfers, legacy_payments" on createBillingItem or completeCheckout means the
+      test bank info setup is incomplete.
+  - source: Healthie
+    kind: LabOrder objects
+    instruction: >-
+      Change Healthcare E-Labs is unavailable in the sandbox because Change's own developer
+      environment cannot trigger end-to-end tests or provision accounts. Healthie's documented
+      workaround is to create LabOrder objects directly via the API to simulate the ingested result
+      an integration would produce.
+  - source: Healthie
+    kind: ICD / CPT codes
+    instruction: >-
+      Only a limited subset of ICD and CPT codes is loaded in the sandbox. Healthie recommends
+      building code-dependent workflows against stand-in codes.
+time_simulation:
+  supported: false
+  note: No test clocks or time-travel tooling — a scheduling and recurring-billing platform without a
+    way to simulate the passage of time in test.
+fixture_tooling:
+  supported: false
+  note: No fixture/seed CLI or trigger tooling is published. There is no way to force a webhook
+    delivery for testing.
+console:
+  graphiql: https://docs.gethealthie.com/graphiql
+  explorer: https://docs.gethealthie.com/guides/api-concepts/explorer/
+  schema_reference: https://docs.gethealthie.com/reference
+  note: >-
+    Healthie publishes a hosted GraphiQL/API Explorer against the schema, plus a browsable schema
+    reference pinned per API version (e.g. /reference/2024-06-01).
+gaps:
+- No self-service sandbox signup — an integrator cannot evaluate the API without a Healthie
+  conversation.
+- No environment prefix on API keys.
+- No test clocks, no webhook test-trigger, no seeded demo tenant.
+related:
+- conventions/healthie-conventions.yml
+- authentication/healthie-authentication.yml
+x-evidence:
+  fetched: '2026-08-14'
+  urls:
+  - {url: 'https://docs.gethealthie.com/guides/api-concepts/environments', http_status: 200}
+  - {url: 'https://staging-api.gethealthie.com/graphql', http_status: 200}
+  - {url: 'https://api.gethealthie.com/graphql', http_status: 500, note: anonymous introspection refused}

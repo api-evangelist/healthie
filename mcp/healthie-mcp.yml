@@ -1,0 +1,101 @@
+generated: '2026-08-14'
+method: searched
+status: published
+source: https://github.com/healthie/healthie-dev-assist
+docs:
+- https://github.com/healthie/healthie-dev-assist
+- https://www.gethealthie.com/blog/build-on-healthie-faster-with-ai-coding-agents-and-mcp
+- https://www.gethealthie.com/blog/dev-assist-2-0-faster-schema-exploration-lower-overhead
+deployment:
+  mode: local-stdio
+  endpoint: null
+  install: 'claude mcp add healthie -- npx tsx /path/to/healthie-dev-assist/src/server.ts'
+  package: https://github.com/healthie/healthie-dev-assist
+  auth: api-key
+  verified: searched
+  note: >-
+    Healthie ships NO hosted/remote MCP endpoint. Dev Assist is a local stdio server the developer
+    clones and runs on their own machine (git clone -> npm install -> npm run regenerate-schema ->
+    npm run setup). It is not published to npm or any MCP registry, so there is no `npx -y @vendor/mcp`
+    one-liner either — the install path requires a working copy of the repository on disk. An agent
+    cannot reach Healthie over MCP without a human first installing this. Probes of
+    https://mcp.gethealthie.com/mcp, https://api.gethealthie.com/mcp and
+    https://docs.gethealthie.com/mcp all missed (DNS failure / 404 / docs 404 shell).
+server:
+  name: healthie-dev-assist
+  title: Healthie Dev Assist
+  transport: stdio
+  version: 1.0.0
+  license: MIT
+  language: TypeScript
+  runtime: Node.js v18+
+  repository: https://github.com/healthie/healthie-dev-assist
+  first_party: true
+  created: '2025-05-29'
+  last_pushed: '2026-07-09'
+  sdk: '@modelcontextprotocol/sdk ^1.26.0'
+architecture: code-execution
+architecture_note: >-
+  Dev Assist 2.0 deliberately exposes ONE general tool rather than one tool per API operation. The
+  agent writes a small TypeScript program against a sandboxed `healthie` object (no filesystem,
+  network or shell access) and the server executes it in a single turn — search, introspect, query
+  and mutate in one round trip instead of five to ten. This is why the tool count below is 2 and not
+  813: the 386 queries and 427 mutations of the GraphQL schema are reachable THROUGH
+  execute_healthie_code, not enumerated as individual MCP tools.
+authentication:
+  env: HEALTHIE_API_KEY
+  optional_env: HEALTHIE_AUTHORIZATION_SHARD
+  note: >-
+    Schema search and introspection work with no key. healthie.query() and healthie.mutate() require
+    a Healthie API key, which inherits the permissions of the Healthie user account it is tied to.
+tool_count: 2
+tools:
+- name: execute_healthie_code
+  description: >-
+    Execute TypeScript/JavaScript code in a sandboxed Node environment to explore the Healthie
+    GraphQL schema and call the API. All operations run in one execution.
+  input_schema:
+    type: object
+    properties:
+      code:
+        type: string
+        description: >-
+          Async JavaScript/TypeScript code to execute. Use `return` to output results. All healthie.*
+          methods are async — use await. Max 50,000 characters.
+    required: [code]
+  sandbox_api:
+  - signature: 'healthie.search(query: string, options?: { kind: "query" | "mutation" | "type" }) -> SearchResult[]'
+    description: Search the cached Healthie GraphQL schema by keyword.
+    backing_surface: local schema cache
+  - signature: 'healthie.introspect(typeName: string, options?: { depth: number }) -> TypeDetails'
+    description: Get full details on any type, query, or mutation.
+    backing_surface: local schema cache
+  - signature: 'healthie.query(graphql: string, variables?: Record<string, unknown>) -> any'
+    description: Execute a GraphQL query against the Healthie API.
+    backing_surface: https://api.gethealthie.com/graphql
+    requires_key: true
+  - signature: 'healthie.mutate(graphql: string, variables?: Record<string, unknown>) -> any'
+    description: Execute a GraphQL mutation against the Healthie API.
+    backing_surface: https://api.gethealthie.com/graphql
+    requires_key: true
+- name: regenerate_schema
+  description: >-
+    Re-fetch the Healthie GraphQL schema from the live API via introspection. Use when types or
+    fields seem missing or outdated.
+  input_schema:
+    type: object
+    properties: {}
+  backing_surface: GraphQL introspection
+prompt_count: 1
+prompts:
+- name: healthie_context
+  description: Healthie API exploration context.
+x-evidence:
+  fetched: '2026-08-14'
+  urls:
+  - {url: 'https://api.github.com/repos/healthie/healthie-dev-assist', http_status: 200}
+  - {url: 'https://raw.githubusercontent.com/healthie/healthie-dev-assist/main/README.md', http_status: 200}
+  - {url: 'https://raw.githubusercontent.com/healthie/healthie-dev-assist/main/src/server.ts', http_status: 200}
+  - {url: 'https://raw.githubusercontent.com/healthie/healthie-dev-assist/main/package.json', http_status: 200}
+  - {url: 'https://api.gethealthie.com/mcp', http_status: 404}
+  - {url: 'https://docs.gethealthie.com/mcp', http_status: 404}

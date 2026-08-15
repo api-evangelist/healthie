@@ -1,0 +1,158 @@
+generated: '2026-08-14'
+method: searched
+source:
+- https://docs.gethealthie.com/guides/api-concepts/versioning
+- https://docs.gethealthie.com/guides/api-concepts/deprecations
+- https://docs.gethealthie.com/guides/api-concepts/changelog
+- graphql/healthie-schema.graphql
+versioning:
+  scheme: date-based, opt-in via request header
+  header: Healthie-GraphQL-API-Version
+  current_default: '2024-06-01'
+  latest: '2026-01-01'
+  cumulative: true
+  docs: https://docs.gethealthie.com/guides/api-concepts/versioning
+  model: >-
+    Two-track. BREAKING changes are gated behind a dated version an integrator must opt into by
+    setting the header; ADDITIVE changes ship by accretion and are live in every version — including
+    the 2024-06-01 baseline — the moment they land. A request with no version header is served the
+    baseline, so an unversioned client never silently receives a breaking change.
+  breaking_change_definition:
+  - Removing a field
+  - Changing the return type of a field
+  - Changing an input argument default (e.g. a query becoming paginated by default)
+  - Making a field nullable when it was previously non-nullable
+  - Making an input argument non-nullable when it was previously nullable
+  non_breaking_change_definition:
+  - Adding new queries, mutations, or fields
+  - Adding an optional new input argument to an existing mutation
+  - Adding a new filter or sort_by option to an existing field
+  - Adding new/updated data to Healthie-provided resource queries (insurance plans, ICD codes)
+  - Fixing an internal server error
+version_count: 11
+versions:
+- version: '2026-01-01'
+  changes: [Migrated additional query fields to Connection Type pagination]
+- version: '2025-11-30'
+  changes:
+  - Improved surescriptsReportedMedicationHistory — now returns MedicationHistoryType, uses cursor
+    pagination, supports an Organization Level Prescriber, defaults to the last 6 months, and
+    patient_id is now required.
+- version: '2025-10-15'
+  changes:
+  - Removed clientMutationId from all mutations
+  - Migrated additional query fields to Connection Type pagination
+- version: '2025-07-31'
+  changes: [Standardized field types — converted string fields to enums and integers for type safety]
+- version: '2025-05-15'
+  changes:
+  - Added validation to createAppointment allowing only a single attendee for individual appointments
+    when specified via attendee_ids
+- version: '2025-04-01'
+  changes:
+  - Converted fields and arguments to enums for type safety
+  - Added validation requiring appointment_location_id for in-person appointments via createAppointment
+- version: '2025-01-01'
+  changes: [Migrated fields to Connection Type pagination]
+- version: '2024-11-01'
+  changes: [Added validation and updated field nullability for common mutations, Fixed spelling issues
+      across the API]
+- version: '2024-10-20'
+  changes: [Updated ISO8601Date and ISO8601DateTime type implementations]
+- version: '2024-10-01'
+  changes: [Added pagination to the pharmacies query field]
+- version: '2024-07-01'
+  changes:
+  - Standardized datetime fields to ISO8601DateTime (previously String)
+  - Standardized ID fields to ID (previously String and Int)
+deprecation:
+  policy_url: https://docs.gethealthie.com/guides/api-concepts/deprecations
+  policy_published: true
+  notice_period: 6 months minimum before removal
+  migration_instructions_promised: true
+  mechanism: GraphQL @deprecated directive on fields and enum values
+  mechanism_note: >-
+    Healthie carries deprecation IN THE CONTRACT rather than only in prose — the @deprecated directive
+    surfaces the warning in any GraphQL IDE, editor or codegen tool, which is stronger than a docs
+    page and is machine-readable by an agent reading the SDL.
+  sunset_header: false
+  sunset_header_note: >-
+    No RFC 8594 Sunset or Deprecation HTTP header. Deprecation is expressed only in the schema and in
+    the docs, so a running client gets no runtime warning on the wire.
+  contact: hello@gethealthie.com
+  published_deprecations:
+  - feature: String-based sort_by query arguments
+    deprecated_on: '2023-11-06'
+    expected_removal: '2024-08-06'
+    recommendation: Use the enum-based order_by arguments.
+    status: past its stated removal date and still present in the schema
+deprecated_operations:
+  source: graphql/healthie-schema.graphql
+  deprecated_field_count: 513
+  deprecated_enum_value_count: 20
+  types_affected: 461
+  note: >-
+    425 of the 513 deprecated fields are the single field `clientMutationId`, marked "DO NOT USE" on
+    every mutation payload. Excluding that, roughly 88 genuinely deprecated fields remain.
+  deprecated_queries:
+  - {name: billableIcdCodes, reason: All ICD Codes that are allowed to be used in healthcare claims}
+  - {name: courseCompletetionInfo, reason: Use `course_completion_info` instead}
+  - {name: goalsOverallCompletionRate, reason: Use goalsOverallCompletionRateInfo instead}
+  - {name: healthAssessment, reason: Deprecated, do not use}
+  - {name: intitialServiceDate, reason: Use `initialServiceDate` instead}
+  - {name: pharamcy, reason: Use `pharmacy` instead}
+  - {name: prescriptions, reason: Use `prescriptionMedications` instead}
+  - {name: surescriptsReportedMedicationHistory, reason: Use API version 2025-11-30 or later to return
+      a MedicationHistoryType connection}
+  - {name: timesForRange, reason: use availableSlotsForRange}
+  deprecated_mutations:
+  - {name: createAvailabilityWithAppointmentTypes, reason: Use createAvailability instead}
+  - {name: createClientViaForm, reason: Replaced by completeCheckout}
+  - {name: createFormAnswerGroupSigning, reason: Use the signFormAnswerGroup mutation}
+  - {name: deleteOrganizationMembership, reason: Organization Memberships cannot be destroyed}
+  - {name: editAvailabilityWithAppointmentTypes, reason: Use editAvailability instead}
+  - {name: healthAssessmentServiceSignup, reason: Deprecated, do not use}
+  - {name: sendSpeakToTrainerNotification, reason: Deprecated, do not use}
+  - {name: updateAddendum, reason: Deprecated. Does nothing}
+  - {name: updateCalorieLevel, reason: Deprecated, do not use}
+  - {name: updateMacronutrientSplit, reason: Deprecated, do not use}
+  - {name: uploadBatchToChangeHealth, reason: ChangeHealth claims integration has been discontinued}
+  discontinued_integrations:
+  - name: Change Healthcare
+    evidence: >-
+      Multiple schema deprecation reasons state "ChangeHealth integration has been discontinued" /
+      "ChangeHealth claims integration has been discontinued", affecting uploadBatchToChangeHealth and
+      User.change_healthcare_insurance_eligibility_connected. Note that the public integrations guide
+      at docs.gethealthie.com/guides/integrations still documents the Change Healthcare E-Labs
+      integration as current — the schema and the guide disagree.
+changelog:
+  url: https://docs.gethealthie.com/guides/api-concepts/changelog
+  cadence: weekly
+  entry_count: 52
+  detail: changelog/healthie-changelog.yml
+status_page:
+  url: https://status.gethealthie.com/
+  http_status: 200
+  verified: '2026-08-14'
+sla:
+  url: null
+  uptime_target_published: false
+  marketing_claim: >-
+    Healthie markets ~99.99% uptime and ~2.5B API calls/month on gethealthie.com/api, but publishes no
+    contractual SLA document at a public URL.
+support:
+  help_center: https://help.gethealthie.com/
+  developer_contact: hello@gethealthie.com
+roadmap:
+  url: https://portal.productboard.com/gethealthie/1-healthie-product-portal/tabs/4-in-development
+  platform: Productboard
+  http_status: 200
+  verified: '2026-08-14'
+x-evidence:
+  fetched: '2026-08-14'
+  urls:
+  - {url: 'https://docs.gethealthie.com/guides/api-concepts/versioning', http_status: 200}
+  - {url: 'https://docs.gethealthie.com/guides/api-concepts/deprecations', http_status: 200}
+  - {url: 'https://docs.gethealthie.com/guides/api-concepts/changelog', http_status: 200}
+  - {url: 'https://status.gethealthie.com/', http_status: 200}
+  - {url: 'https://portal.productboard.com/gethealthie/1-healthie-product-portal/tabs/4-in-development', http_status: 200}

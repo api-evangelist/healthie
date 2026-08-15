@@ -1,0 +1,52 @@
+generated: '2026-08-14'
+method: generated
+source: graphql/healthie-schema.graphql + https://docs.gethealthie.com/
+note: >-
+  Packaged Agent Skills for the Healthie GraphQL API. Every operation named in every skill was
+  verified verbatim against the schema captured at graphql/healthie-schema.graphql — none is
+  invented. Healthie publishes no OpenAPI, so these skills are grounded in GraphQL root field names
+  rather than in REST operationIds. Healthie publishes no skills or AGENTS.md of its own; a search of
+  the docs host and the healthie GitHub organization found none.
+api: graphql/healthie-schema.graphql
+endpoint: https://api.gethealthie.com/graphql
+skill_count: 5
+skills:
+- file: healthie-explore-the-schema.md
+  name: Explore the Healthie GraphQL schema
+  description: Find the right query or mutation out of 819 root fields, via the saved SDL, sandbox
+    introspection, the hosted explorer, or the Dev Assist MCP server.
+  operations: [__schema, createApiKey, apiKeys, organization]
+- file: healthie-onboard-a-client.md
+  name: Onboard a Healthie client
+  description: Create a client record, send the practice's intake forms, and read the completed
+    submissions back.
+  operations: [createClient, updateClient, users, user, customModuleForms, customModuleForm,
+    createFormAnswerGroup, formAnswerGroups, formAnswerGroup]
+- file: healthie-book-an-appointment.md
+  name: Book a Healthie appointment
+  description: Find real availability and book, reschedule or cancel an appointment.
+  operations: [availableSlotsForRange, appointmentTypes, appointments, createAppointment,
+    updateAppointment, deleteAppointment]
+- file: healthie-bill-and-claim.md
+  name: Bill a Healthie visit and file the claim
+  description: Charge capture, patient payment, eligibility, authorization and CMS-1500 submission.
+  operations: [createBillingItem, createRequestedPayment, completeCheckout, runEligibilityCheck,
+    createInsuranceAuthorization, createCms1500, updateCms1500, cms1500s, billingItems]
+- file: healthie-subscribe-to-events.md
+  name: Subscribe to Healthie events
+  description: Register and verify webhooks, and open a GraphQL subscription over Healthie's
+    ActionCable/AnyCable WebSocket.
+  operations: [createWebhook, updateWebhook, deleteWebhook, webhooks, noteAddedSubscription,
+    conversationChangedSubscription, conversationMembershipAddedSubscription,
+    conversationMembershipUpdatedSubscription, formAnswerGroupModifiedSubscription,
+    userUpdatedSubscription]
+cross_cutting_rules:
+- Healthie has NO idempotency contract — no Idempotency-Key, no de-duplication, and clientMutationId
+  was removed in version 2025-10-15. Query before retrying any write.
+- Mutation validation failures return HTTP 200 with an EMPTY GraphQL errors[] array and a populated
+  messages[] FieldError list. Always select messages { field message }.
+- No rate-limit response headers and no Retry-After. Back off exponentially with jitter.
+- Max query complexity 2000, max depth 25; connection cost is multiplied by page size, and an
+  omitted page size is scored as 100.
+- Pin Healthie-GraphQL-API-Version; the unversioned default is the 2024-06-01 baseline.
+- Everything on this API is PHI. Do not echo patient data into logs, prompts or traces.

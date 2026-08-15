@@ -1,0 +1,146 @@
+generated: '2026-08-14'
+method: searched
+source:
+- https://docs.gethealthie.com/guides/api-concepts/
+- graphql/healthie-schema.graphql
+docs: https://docs.gethealthie.com/guides/intro
+note: >-
+  Cross-cutting request/response semantics for the Healthie GraphQL API, read from the published API
+  Concepts guides and cross-checked against the schema in graphql/healthie-schema.graphql.
+transport:
+  protocol: GraphQL over HTTP POST
+  endpoint: https://api.gethealthie.com/graphql
+  sandbox_endpoint: https://staging-api.gethealthie.com/graphql
+  content_type: application/json
+  realtime: GraphQL subscriptions over WebSocket (ActionCable/AnyCable)
+authentication:
+  style: static API key in headers
+  headers:
+  - 'Authorization: Basic <API_KEY>'
+  - 'AuthorizationSource: API'
+  - 'AuthorizationShard: <SHARD_ID>   # sharded customers only'
+  detail: authentication/healthie-authentication.yml
+  docs: https://docs.gethealthie.com/guides/api-concepts/authentication
+idempotency:
+  supported: false
+  header: null
+  scope: null
+  retention: null
+  docs: https://docs.gethealthie.com/guides/api-concepts/client-mutation-id
+  finding: >-
+    Healthie has NO idempotency contract, and says so explicitly. The Relay-standard
+    `clientMutationId` field that appears on mutation inputs is documented as dead weight: "This is a
+    GraphQL auto-generated field that is not used in our API. You should not send in a
+    clientMutationId and can ignore the field." API version 2025-10-15 went further and REMOVED
+    clientMutationId from all mutations as a breaking change. There is no Idempotency-Key header, no
+    request-deduplication window, and no documented safe-retry semantics for any write.
+  consequence: >-
+    A retried createAppointment, createBillingItem, createCms1500 or createEntry after a timeout can
+    duplicate a clinical or financial record. Any agent or job runner calling Healthie writes must
+    implement its own de-duplication — for example by querying for a matching record before retrying,
+    or by carrying its own correlation key in a `metadata` JSON field where the schema offers one.
+  evidence: >-
+    docs/client-mutation-id ("not used in our API"); versioning history 2025-10-15 ("Removed
+    clientMutationId from all mutations"); no Idempotency-Key in any documented header set.
+pagination:
+  styles: [cursor, offset]
+  preferred: cursor
+  docs: https://docs.gethealthie.com/guides/api-concepts/pagination
+  cursor:
+    request_params: [after, page_size, should_paginate]
+    response_fields: [cursor, PageInfo.start_cursor, PageInfo.end_cursor, PageInfo.has_next_page,
+      PageInfo.has_previous_page]
+    count_pattern: 'Each paginated field has a sibling count field (announcements -> announcementsCount).'
+    sorting_caveat: >-
+      Cursor pagination is coupled to sort order — pagination MUST be reset whenever the `order_by` /
+      `sort_by` argument changes.
+    migration: >-
+      Healthie has been migrating fields to Connection-type cursor pagination across breaking
+      versions 2025-01-01, 2025-10-15 and 2026-01-01, so which fields support it depends on the API
+      version pinned.
+  offset:
+    request_params: [offset]
+    status: legacy
+    default_page_size: 10
+    note: >-
+      An offset beyond the end of the dataset returns an empty array rather than an error. Healthie
+      recommends cursor pagination instead — "more stable, performant, and easier to use".
+filtering_and_sorting:
+  sort_argument: order_by (enum-based)
+  legacy_sort_argument: sort_by (string-based)
+  deprecation: >-
+    String-based sort_by arguments were deprecated 2023-11-06 with an expected removal date of
+    2024-08-06; all clients should use enum-based order_by.
+versioning:
+  scheme: date-based, opt-in via request header
+  header: Healthie-GraphQL-API-Version
+  current_default: '2024-06-01'
+  latest: '2026-01-01'
+  cumulative: true
+  behaviour: >-
+    Requests with no version header default to the 2024-06-01 baseline. Versions are cumulative:
+    version N+1 contains every change from version N. Only BREAKING changes are gated behind a
+    version — additive changes ship by accretion and appear in every version immediately, including
+    the baseline.
+  docs: https://docs.gethealthie.com/guides/api-concepts/versioning
+  detail: lifecycle/healthie-lifecycle.yml
+error_envelope:
+  transport_level:
+    shape: 'GraphQL spec section 7.1.2 errors[] array'
+    fields: [message, extensions.code]
+    known_codes: [TOO_MANY_REQUESTS]
+    http_semantics: >-
+      Healthie states it targets RFC 9110 semantics and returns "the most appropriate HTTP response
+      code where applicable", while acknowledging that some 404 Not Found responses do not conform to
+      the GraphQL spec and are being remediated.
+    docs: https://docs.gethealthie.com/guides/api-concepts/error-handling
+  field_level:
+    shape: 'messages: [FieldError]'
+    fields: [field, message]
+    description: >-
+      Validation failures do NOT populate the GraphQL errors[] array. Every mutation payload carries
+      a `messages: [FieldError]` list ({field, message}) alongside the mutated object, and a
+      validation failure returns HTTP 200 with a null/unchanged object and a populated messages
+      array. A client that only checks `errors` will read a failed write as a success.
+    verified_in: graphql/healthie-schema.graphql (FieldError referenced by 425 payload types)
+  detail: errors/healthie-error-codes.yml
+rate_limiting:
+  model: GraphQL cost control (complexity + depth) plus an undocumented dynamic request rate
+  response_headers: none published
+  detail: rate-limits/healthie-rate-limits.yml
+request_tracing:
+  request_id_header: null
+  published: false
+  note: >-
+    Healthie publishes no request-id / correlation-id response header, so a client cannot quote an
+    identifier when raising a support ticket about a specific call.
+metadata:
+  supported: partial
+  mechanism: 'metadata: JSON fields'
+  note: >-
+    A `metadata` field of scalar type JSON has been added by accretion to a growing set of types
+    (AllergySensitivity, Diagnosis, MedicationType and their create/update inputs as recently as the
+    2026-07-31 changelog entry). It is not a platform-wide convention — it exists only where the
+    schema declares it.
+field_expansion:
+  mechanism: native GraphQL field selection
+  note: GraphQL selection sets replace REST-style `expand` / sparse-fieldset parameters entirely.
+data_types:
+  ids: ID (standardized from String/Int in version 2024-07-01)
+  datetimes: ISO8601DateTime / ISO8601Date (standardized from String in version 2024-07-01)
+  custom_scalars: [Cursor, HexColor, ISO8601Date, ISO8601DateTime, ISO8601Duration, JSON, UUID, Upload]
+  timezones_docs: https://docs.gethealthie.com/guides/api-concepts/timezones
+file_uploads:
+  scalar: Upload
+  docs: https://docs.gethealthie.com/guides/api-concepts/file-uploads
+environments:
+  model: two fully isolated environments, no data transfer between them
+  detail: sandbox/healthie-sandbox.yml
+  docs: https://docs.gethealthie.com/guides/api-concepts/environments
+related:
+- authentication/healthie-authentication.yml
+- errors/healthie-error-codes.yml
+- lifecycle/healthie-lifecycle.yml
+- rate-limits/healthie-rate-limits.yml
+- sandbox/healthie-sandbox.yml
+- data-model/healthie-data-model.yml

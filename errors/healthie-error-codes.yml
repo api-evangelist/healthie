@@ -1,0 +1,133 @@
+generated: '2026-08-14'
+method: searched
+source:
+- https://docs.gethealthie.com/guides/api-concepts/error-handling
+- https://docs.gethealthie.com/guides/api-concepts/rate-limits
+- graphql/healthie-schema.graphql
+docs: https://docs.gethealthie.com/guides/api-concepts/error-handling
+format: graphql-errors
+format_note: >-
+  NOT RFC 9457. Healthie is a GraphQL API and returns no application/problem+json. It targets the
+  GraphQL specification section 7.1.2 errors[] array, and states it also strives to follow RFC 9110
+  HTTP semantics "where applicable" — while explicitly acknowledging in its own docs that some 404
+  Not Found responses do not conform to the GraphQL spec and are pending remediation. Healthie
+  publishes no consolidated error-code reference page; the catalogue below is assembled from the
+  error-handling and rate-limit guides plus the error shapes declared in the schema.
+completeness: partial
+completeness_note: >-
+  Healthie does not publish an enumerated error-code registry. Only one machine-readable
+  extensions.code value (TOO_MANY_REQUESTS) appears anywhere in the public documentation. Everything
+  else surfaces as free-text `message` strings, which a client can only pattern-match on.
+envelopes:
+- id: transport-errors
+  shape: 'errors: [{ message: String, extensions: { code: String } }]'
+  applies_to: parse errors, validation of the query document, auth failures, rate/complexity/depth
+    limits, server errors
+  spec: GraphQL specification section 7.1.2
+  note: The `extensions.code` key is present on some errors and absent on others.
+- id: field-errors
+  shape: 'messages: [FieldError]  # FieldError { field: String, message: String! }'
+  applies_to: business/validation failures on mutations
+  http_status: 200
+  note: >-
+    THE MOST IMPORTANT ERROR SHAPE IN THIS API, and the easiest to miss. Mutation validation failures
+    do not populate the transport-level errors[] array at all. Every mutation payload carries a
+    `messages: [FieldError]` list next to the mutated object; on failure the object comes back null
+    or unchanged, the HTTP status is 200, and errors[] is empty. A client that branches only on
+    `response.errors` reads a rejected write as a successful one. FieldError is referenced by 425
+    payload types in the schema — effectively every mutation.
+  verified_in: graphql/healthie-schema.graphql
+- id: eligibility-check-errors
+  shape: 'ClaimEligibilityCheckErrors { code: String, description: String }'
+  applies_to: insurance eligibility checks
+  note: >-
+    A domain-specific error object carrying a payer/clearinghouse error code and description. The
+    code values are passed through from the eligibility partner and are not enumerated by Healthie.
+  verified_in: graphql/healthie-schema.graphql
+problems:
+- id: too-many-requests
+  code: TOO_MANY_REQUESTS
+  envelope: transport-errors
+  title: Rate limit exceeded
+  message: 'Too many requests. Please try again later.'
+  remediation: >-
+    Back off and retry. Healthie publishes no rate-limit response headers and no Retry-After, so the
+    backoff interval cannot be computed from the response — use exponential backoff with jitter.
+  source: https://docs.gethealthie.com/guides/api-concepts/rate-limits
+- id: complexity-limit-exceeded
+  code: null
+  envelope: transport-errors
+  title: Query complexity limit exceeded
+  message: 'Query has complexity of {n}, which exceeds max complexity of 2000'
+  remediation: >-
+    Reduce the selection set or lower the connection page size. An unpaginated connection is scored
+    with a default page size of 100, so adding an explicit `first:` is usually the fix.
+  retryable: false
+  source: https://docs.gethealthie.com/guides/api-concepts/rate-limits
+- id: depth-limit-exceeded
+  code: null
+  envelope: transport-errors
+  title: Query depth limit exceeded
+  message: 'Query has depth of {n}, which exceeds max depth of 25'
+  remediation: Flatten the query; fragments and inline fragments count toward depth.
+  retryable: false
+  source: https://docs.gethealthie.com/guides/api-concepts/rate-limits
+- id: not-found
+  code: null
+  envelope: transport-errors
+  http_status: 404
+  title: Resource not found
+  remediation: >-
+    Verify the ID and the environment. IDs are NOT portable between sandbox and production. Note
+    Healthie's own caveat that these 404 responses are known to be non-conformant with the GraphQL
+    specification.
+  source: https://docs.gethealthie.com/guides/api-concepts/error-handling
+- id: mutation-validation-failed
+  code: null
+  envelope: field-errors
+  http_status: 200
+  title: Mutation validation failed
+  shape: 'messages: [{ field: "<input field>", message: "<validation message>" }]'
+  remediation: >-
+    Always select `messages { field message }` on every mutation and treat a non-empty messages array
+    as a failure, regardless of HTTP status or an empty errors[] array.
+  source: graphql/healthie-schema.graphql
+domain_reason_codes:
+- id: claim-md-rejection-messages-info
+  type: ClaimMdRejectionMessagesInfo
+  applies_to: CMS-1500 claim submission via ClaimMD
+  description: Why a ClaimMD rejection-messages field came back empty.
+  values:
+  - {code: CLAIM_MD_REJECTION_MESSAGES_NOT_AVAILABLE}
+  - {code: NO_RECENT_CLAIM_SUBMISSION}
+  - {code: NOT_A_CLAIM_MD_CLAIM}
+  - {code: NO_REJECTION_MESSAGES}
+  verified_in: graphql/healthie-schema.graphql
+- id: generated-form-answer-group-rejection-reason
+  type: GeneratedFormAnswerGroupRejectionReasonEnum
+  applies_to: AI-generated charting notes (AI Scribe / ambient documentation)
+  description: Reason a clinician rejected an AI-generated form answer group.
+  values:
+  - {code: INACCURATE_INFORMATION, meaning: The proposed note contains factual errors or incorrect
+      details from the encounter.}
+  - {code: MISSING_DETAILS, meaning: The proposed note is missing significant details that were
+      discussed during the encounter.}
+  - {code: DIDNT_FOLLOW_INSTRUCTIONS, meaning: The proposed note did not follow the formatting or
+      content instructions.}
+  - {code: DUPLICATE_OR_OWN_NOTE, meaning: The provider already created their own note for this
+      encounter.}
+  verified_in: graphql/healthie-schema.graphql
+gaps:
+- No published error-code reference page. Only one extensions.code value is documented platform-wide.
+- No RFC 9457 problem+json, no type URIs, no per-error documentation links.
+- Healthie documents a known non-conformance (404 responses) without a dated remediation commitment.
+- Validation failures are invisible to a client that inspects only the GraphQL errors[] array.
+related:
+- conventions/healthie-conventions.yml
+- rate-limits/healthie-rate-limits.yml
+x-evidence:
+  fetched: '2026-08-14'
+  urls:
+  - {url: 'https://docs.gethealthie.com/guides/api-concepts/error-handling', http_status: 200}
+  - {url: 'https://docs.gethealthie.com/guides/api-concepts/rate-limits', http_status: 200}
+  - {url: 'https://staging-api.gethealthie.com/graphql', http_status: 200, note: introspection}

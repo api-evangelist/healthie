@@ -1,0 +1,257 @@
+asyncapi: 2.6.0
+info:
+  title: Healthie GraphQL Subscriptions (WebSocket)
+  version: '2026-08-14'
+  description: |
+    Best-effort AsyncAPI 2.6 description of the Healthie **GraphQL subscription** surface —
+    the real-time push channel, distinct from the outbound HTTP webhook surface described in
+    `healthie-webhooks-asyncapi.yml`.
+
+    Healthie delivers GraphQL subscriptions over a WebSocket connection using the
+    **ActionCable** protocol via **AnyCable**. Healthie states explicitly that this differs
+    from the Apollo WebSocket subprotocol and that Apollo's default subscription connection
+    functionality cannot be used against this endpoint; a translation layer is described as
+    "being evaluated" but is not shipped.
+
+    Authentication is a `token` **query parameter** carrying the Healthie API key, because
+    the WebSocket handshake has no header phase.
+
+    The connection sequence is: open the socket -> receive a `welcome` frame and periodic
+    `ping` frames -> generate a client-side channel ID -> send a `subscribe` command for
+    `GraphqlChannel` with that ID -> send a `message` command carrying the stringified
+    GraphQL subscription document. Results then arrive as `message` frames with a
+    `result.data` payload.
+
+    NOT AN OFFICIAL SPEC. Derived by API Evangelist from the public documentation at
+    https://docs.gethealthie.com/guides/websockets-and-subscriptions/getting-started/ and
+    from the six `Subscription` root fields in the Healthie GraphQL schema captured at
+    `graphql/healthie-schema.graphql`. Healthie publishes no AsyncAPI of its own.
+  contact:
+    name: Healthie Developer Documentation
+    url: https://docs.gethealthie.com/guides/websockets-and-subscriptions/getting-started/
+  license:
+    name: Proprietary — Healthie Terms of Use
+    url: https://www.gethealthie.com/terms
+defaultContentType: application/json
+servers:
+  production:
+    url: ws.gethealthie.com/subscriptions
+    protocol: wss
+    description: |
+      Production subscription endpoint. The API key is supplied as the `token` query
+      parameter: `wss://ws.gethealthie.com/subscriptions?token=API_KEY_HERE`.
+    security:
+    - apiKeyQuery: []
+  sandbox:
+    url: ws.staging.gethealthie.com/subscriptions
+    protocol: wss
+    description: |
+      Sandbox subscription endpoint, paired with the sandbox GraphQL endpoint at
+      https://staging-api.gethealthie.com/graphql. Fully isolated from production.
+    security:
+    - apiKeyQuery: []
+channels:
+  GraphqlChannel:
+    description: |
+      The single ActionCable channel Healthie exposes. A client generates its own unique
+      `channelId`, subscribes to `{"channel":"GraphqlChannel","channelId":"<ID>"}`, then
+      sends the GraphQL subscription document as a stringified `data` payload on a
+      `message` command. All six GraphQL subscriptions below are multiplexed over this one
+      channel; the subscription is selected by the document, not by the channel name.
+    bindings:
+      ws:
+        bindingVersion: 0.1.0
+        method: GET
+        query:
+          type: object
+          properties:
+            token:
+              type: string
+              description: Healthie API key. Required — the WebSocket handshake carries no headers.
+          required:
+          - token
+    subscribe:
+      operationId: receiveGraphqlChannelFrames
+      summary: Receive connection lifecycle frames and subscription results from Healthie.
+      message:
+        oneOf:
+        - $ref: '#/components/messages/Welcome'
+        - $ref: '#/components/messages/Ping'
+        - $ref: '#/components/messages/ConfirmSubscription'
+        - $ref: '#/components/messages/SubscriptionResult'
+    publish:
+      operationId: sendGraphqlChannelCommands
+      summary: Send ActionCable commands to subscribe to the channel and register a GraphQL subscription.
+      message:
+        oneOf:
+        - $ref: '#/components/messages/SubscribeCommand'
+        - $ref: '#/components/messages/MessageCommand'
+components:
+  securitySchemes:
+    apiKeyQuery:
+      type: httpApiKey
+      name: token
+      in: query
+      description: |
+        Healthie API key passed as a URL query parameter. Note the exposure consequence: a
+        long-lived PHI-scoped credential travels in a URL and can be captured by proxy and
+        connection logging in a way the header-based GraphQL path is not.
+  messages:
+    Welcome:
+      name: welcome
+      title: Connection welcome
+      summary: Sent by Healthie immediately after the socket opens.
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          type:
+            type: string
+            const: welcome
+          sid:
+            type: string
+            description: Server-assigned session identifier.
+        required:
+        - type
+      examples:
+      - payload:
+          type: welcome
+          sid: 0czVwnltbucBy23AanKFJ
+    Ping:
+      name: ping
+      title: Keepalive ping
+      summary: Periodic keepalive frame carrying a Unix timestamp.
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          type:
+            type: string
+            const: ping
+          message:
+            type: integer
+            description: Unix epoch seconds.
+        required:
+        - type
+      examples:
+      - payload:
+          type: ping
+          message: 1664558222
+    SubscribeCommand:
+      name: subscribe
+      title: Subscribe to GraphqlChannel
+      summary: Registers the client-generated channel ID with the ActionCable server.
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          command:
+            type: string
+            const: subscribe
+          identifier:
+            type: string
+            description: Stringified JSON, e.g. '{"channel":"GraphqlChannel","channelId":"1838f674dff"}'
+        required:
+        - command
+        - identifier
+    MessageCommand:
+      name: message
+      title: Register a GraphQL subscription
+      summary: Carries the stringified GraphQL subscription document for the chosen channel ID.
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          command:
+            type: string
+            const: message
+          identifier:
+            type: string
+            description: The same stringified channel identifier used on the subscribe command.
+          data:
+            type: string
+            description: The GraphQL subscription document, stringified.
+        required:
+        - command
+        - identifier
+        - data
+    ConfirmSubscription:
+      name: confirm_subscription
+      title: Subscription confirmed
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          type:
+            type: string
+            const: confirm_subscription
+          identifier:
+            type: string
+    SubscriptionResult:
+      name: subscription_result
+      title: GraphQL subscription result
+      summary: |
+        A GraphQL execution result for one of the six Healthie subscriptions, wrapped in an
+        ActionCable message envelope. `message.result.data` carries the subscription field
+        named in the registered document.
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          identifier:
+            type: string
+          message:
+            type: object
+            properties:
+              more:
+                type: boolean
+                description: Whether the subscription remains open.
+              result:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    description: |
+                      Keyed by the subscription root field. One of:
+                      conversationChangedSubscription, conversationMembershipAddedSubscription,
+                      conversationMembershipUpdatedSubscription, formAnswerGroupModifiedSubscription,
+                      noteAddedSubscription, userUpdatedSubscription.
+  schemas:
+    HealthieSubscriptions:
+      description: |
+        The six subscription root fields declared by the Healthie GraphQL schema, verified
+        verbatim in graphql/healthie-schema.graphql.
+      type: object
+      properties:
+        conversationChangedSubscription:
+          description: 'Argument: id. Returns Conversation.'
+          type: object
+        conversationMembershipAddedSubscription:
+          description: 'Argument: notesType. Returns ConversationMembership.'
+          type: object
+        conversationMembershipUpdatedSubscription:
+          description: 'Argument: notesType. Returns ConversationMembership.'
+          type: object
+        formAnswerGroupModifiedSubscription:
+          description: 'Argument: id. Returns FormAnswerGroup — fires when a charting note or intake
+            form submission changes.'
+          type: object
+        noteAddedSubscription:
+          description: 'Argument: conversationId. Returns Note — the canonical chat/messaging
+            subscription used by the Healthie Chat SDK.'
+          type: object
+        userUpdatedSubscription:
+          description: 'No arguments. Returns UserNotificationsCount.'
+          type: object
+x-provenance:
+  generated: '2026-08-14'
+  method: derived
+  source:
+  - https://docs.gethealthie.com/guides/websockets-and-subscriptions/getting-started/
+  - https://docs.gethealthie.com/guides/websockets-and-subscriptions/setting-up-apollo-client/
+  - graphql/healthie-schema.graphql
+  official: false
+  note: >-
+    Healthie publishes no AsyncAPI. This document is an API Evangelist derivation from Healthie's own
+    published subscription documentation and its GraphQL schema; every subscription name, argument,
+    return type, server URL and frame shape above appears verbatim in one of those sources.

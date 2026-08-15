@@ -1,0 +1,70 @@
+generated: '2026-08-14'
+method: searched
+probe: true
+source: https://trust.gethealthie.com
+url: https://trust.gethealthie.com
+platform: Vanta
+platform_evidence: 'og:image resolves to https://app.vanta.com/doc?s=7fl6tpu48qh2pynckbhde'
+rendering: javascript-rendered
+rendering_note: >-
+  The trust center returns HTTP 200 but its served HTML is an empty shell — the certification list,
+  document requests and subprocessor table only exist after script execution. The certification list
+  below was therefore read from the server-rendered security page at
+  https://www.gethealthie.com/security, which enumerates the same programs in crawlable HTML.
+secondary_source: https://www.gethealthie.com/security
+certifications:
+- HIPAA
+- SOC 2 Type 2
+- HITRUST CSF r2
+- ONC Health IT Certification
+- PCI DSS Service Provider Level 1 (held by Healthie's payment processor, not by Healthie)
+- GDPR
+- PIPEDA
+baa:
+  available: true
+  url: https://www.gethealthie.com/baa
+security_program:
+- Annual third-party penetration testing
+- Annual disaster recovery tabletop exercises
+- Annual risk assessments
+- Quarterly vulnerability scans
+- Biometric access control, surveillance and 24/7 guards at hosting facilities
+- Redundant power and data backup under a documented disaster recovery plan
+- 256-bit TLS for data in transit
+- Audit logging across application, SQL query and platform backend activity
+cyber_insurance:
+  published: true
+  note: >-
+    Healthie publishes a cybersecurity coverage article covering technology and professional
+    liability, security and privacy liability and security breach response.
+  url: https://help.gethealthie.com/article/1114-cybersecurity-coverage
+contacts:
+  compliance: compliance@gethealthie.com
+  general: hello@gethealthie.com
+vulnerability_disclosure:
+  published: false
+  note: >-
+    No vulnerability disclosure program was found. There is no /.well-known/security.txt on any
+    Healthie host, no /responsible-disclosure or /vulnerability-disclosure page, and no HackerOne or
+    Bugcrowd program (hackerone.com/healthie and bugcrowd.com/healthie both 404). Healthie publishes
+    a compliance@ address but no security-reporting address and no safe-harbour statement. For a
+    HITRUST- and SOC 2-certified platform holding PHI, this is the most conspicuous single gap on the
+    public security surface — and the cheapest to close. No VulnerabilityDisclosure or Security
+    pointer is wired into apis.yml, because there is nothing to point at.
+  checked: '2026-08-14'
+supersedes:
+  previous_source: https://www.gethealthie.com/hipaa-compliant-software
+  previous_certifications: [HIPAA, GDPR]
+  reason: >-
+    The automated probe (0-working/probe-security-programs.py) matched a marketing page carrying only
+    two keywords. This pass replaces it with the actual Vanta trust center plus the full
+    server-rendered certification list.
+evidence:
+- {source: 'https://trust.gethealthie.com', http_status: 200, keywords: [trust center, security,
+      compliance]}
+- {source: 'https://www.gethealthie.com/security', http_status: 200, keywords: [hipaa, soc 2, hitrust,
+      onc, pci, gdpr, pipeda]}
+- {source: 'https://www.gethealthie.com/baa', http_status: 200, keywords: [business associate agreement]}
+- {source: 'https://hackerone.com/healthie', http_status: 404}
+- {source: 'https://bugcrowd.com/healthie', http_status: 404}
+- {source: 'https://www.gethealthie.com/.well-known/security.txt', http_status: 404}

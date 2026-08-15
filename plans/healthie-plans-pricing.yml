@@ -1,0 +1,109 @@
+generated: '2026-08-14'
+method: searched
+source: https://www.gethealthie.com/pricing
+url: https://www.gethealthie.com/pricing
+currency: USD
+billing_periods: [monthly, annual]
+annual_discount: 10%
+trial:
+  available: true
+  length_days: 14
+  plan: Plus
+  credit_card_required: false
+  signup: https://secure.gethealthie.com/users/sign_up/provider
+note: >-
+  Healthie publishes a self-serve price list for its four practice plans, but NOT for the API. The
+  four listed tiers are seat-priced EHR subscriptions aimed at clinicians and group practices; none of
+  them includes GraphQL API access. Programmatic access is sold as "Healthie+" (Startups and
+  Enterprise) through a sales conversation with no published price, no published rate card, and no
+  published API call allowance or overage. That is the material finding for an API buyer: the
+  developer surface documented at docs.gethealthie.com cannot be purchased from the pricing page at
+  any price shown here.
+plan_count: 5
+plans:
+- id: core
+  name: Core
+  audience: Clinicians who need simple, affordable tools to run their practice.
+  price_monthly: 19.99
+  price_annual_per_month: 18.00
+  unit: per user per month
+  quota:
+    active_clients: 10
+  api_access: false
+  includes: [Scheduling, Payment processing, Charting, Telehealth, Client portal, iOS / Android mobile
+      app]
+- id: essentials
+  name: Essentials
+  audience: Clinicians starting, running and growing a practice.
+  price_monthly: 49.99
+  price_annual_per_month: 45.00
+  unit: per user per month
+  most_popular: true
+  quota:
+    active_clients: 250
+  api_access: false
+  includes: [Everything in Core, Free outbound fax, Basic email branding templates, Data transfer
+      support, CMS-1500 claims, Custom form building, Group and blast messaging]
+  add_ons:
+  - {name: ClaimMD integration, price_from: 30.00, unit: per month}
+- id: plus
+  name: Plus
+  audience: Clinicians scaling a practice.
+  price_monthly: 129.99
+  price_annual_per_month: 115.00
+  unit: per user per month
+  quota:
+    active_clients: unlimited
+  api_access: false
+  includes: [Everything in Essentials, Group telehealth, Online programs, Dedicated eFax (inbound and
+      outbound)]
+- id: group
+  name: Group
+  audience: Clinician-owned practices with multiple practitioners.
+  price_monthly: 149.99
+  price_annual_per_month: 135.00
+  price_qualifier: starting at
+  unit: per month
+  quota:
+    active_clients: unlimited
+  api_access: false
+  includes: [Everything in Plus, Shared calendar, Roles and permissions, Internal team chat,
+    Color-coded calendar, Free support account per added provider]
+  add_ons:
+  - {name: Additional clinician, price: 50.00, unit: per clinician per month}
+- id: healthie-plus
+  name: Healthie+ (Startups and Enterprise)
+  audience: Digital health startups and enterprises building branded experiences on the Healthie API.
+  price: null
+  price_model: contact-sales
+  api_access: true
+  published_price: false
+  pages:
+  - https://www.gethealthie.com/plus/api-for-digital-health-startups
+  - https://www.gethealthie.com/plus/enterprise
+  contact: https://www.gethealthie.com/plus/contact
+  includes: [Full GraphQL API access, '@healthie/sdk React components', Webhooks, GraphQL
+      subscriptions over WebSocket, Isolated sandbox environment, Sub-organizations and
+      parent-organization webhooks, Sharded data residency]
+  note: >-
+    No price, no tier structure, no API call allowance, no overage rate and no rate-limit tier is
+    published for this plan. The page sells on outcomes ("3 months to go live", "$250–$500K/year
+    development costs saved") rather than on price.
+usage_pricing:
+- id: payment-processing
+  name: Payment processing
+  rate: 2.9% + $0.30 per transaction
+  source: https://www.gethealthie.com/pricing
+  note: Published on the feature comparison table, applies across plans.
+api_metering:
+  published: false
+  note: >-
+    Healthie publishes no per-call pricing, no included API call quota and no overage rate anywhere on
+    its public surface. Rate limits are cost-based rather than commercial — see
+    rate-limits/healthie-rate-limits.yml.
+x-evidence:
+  fetched: '2026-08-14'
+  urls:
+  - {url: 'https://www.gethealthie.com/pricing', http_status: 200}
+  - {url: 'https://www.gethealthie.com/plus/api-for-digital-health-startups', http_status: 200}
+  - {url: 'https://secure.gethealthie.com/users/sign_up/provider', http_status: 200}

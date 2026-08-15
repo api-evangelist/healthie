@@ -1,0 +1,1669 @@
+generated: '2026-08-14'
+method: derived
+source: graphql/healthie-schema.graphql
+note: Entity-relationship graph derived from the Healthie GraphQL schema captured by anonymous introspection of
+  the Healthie sandbox endpoint (https://staging-api.gethealthie.com/graphql). Healthie publishes no OpenAPI; the
+  GraphQL SDL is the machine-readable contract, so relationships are read from object-typed fields (has_one / has_many)
+  and from *_id reference fields rather than from OpenAPI $ref links. Only the core clinical/practice-management
+  entities are enumerated here — the full schema carries 865 object types.
+schema:
+  object_types: 865
+  input_types: 552
+  enums: 138
+  unions: 6
+  custom_scalars:
+  - Cursor
+  - HexColor
+  - ISO8601Date
+  - ISO8601DateTime
+  - ISO8601Duration
+  - JSON
+  - UUID
+  - Upload
+  queries: 386
+  mutations: 427
+  subscriptions: 6
+conventions:
+  id_type: ID (GraphQL ID scalar; standardized from String/Int in API version 2024-07-01)
+  datetime_type: ISO8601DateTime / ISO8601Date (standardized in API version 2024-07-01)
+  mutation_payload: 'Every mutation returns a payload carrying the mutated object plus messages: [FieldError] (field
+    + message) for validation failures.'
+  pagination_type: PageInfo (start_cursor / end_cursor / has_next_page / has_previous_page) on Connection fields;
+    legacy offset pagination on older list fields.
+entity_count: 48
+entities:
+- entity: User
+  description: An user entry, returns basic user information
+  field_count: 479
+  deprecated_field_count: 15
+  id_reference_fields:
+  - default_dosespot_clinic_id
+  - default_onboarding_flow_id
+  - default_stripe_customer_detail_id
+  - dietitian_id
+  - doc_share_id
+  - dosespot_patient_id
+  - fullscript_practitioner_id
+  - generated_reports_folder_id
+  - human_id
+  - last_conversation_id
+  - organization_id
+  - other_provider_ids
+  - referring_provider_id
+  - rupa_patient_id
+  - shard_aware_id
+  - stripe_id
+  - stripe_person_id
+  - tax_id
+  - true_human_id
+  - user_group_id
+  relationships:
+  - to: CarePlan
+    kind: has_one
+    via: active_care_plan
+  - to: CarePlan
+    kind: has_one
+    via: active_group_care_plan
+  - to: User
+    kind: has_many
+    via: active_patients
+  - to: Tag
+    kind: has_many
+    via: active_tags
+  - to: CustomSidebarOverride
+    kind: has_many
+    via: additional_client_profile_items
+  - to: CustomSidebarOverride
+    kind: has_many
+    via: additional_header_dropdown_items
+  - to: CustomSidebarOverride
+    kind: has_many
+    via: additional_quick_profile_items
+  - to: CustomSidebarOverride
+    kind: has_many
+    via: additional_sidebar_items
+  - to: AdvanceAppointmentPrice
+    kind: has_many
+    via: advance_appointment_prices
+  - to: Affiliate
+    kind: has_one
+    via: affiliate
+  - to: AllergySensitivity
+    kind: has_many
+    via: allergy_sensitivities
+  - to: Announcement
+    kind: has_many
+    via: announcements
+  - to: ApiKeyPaginationConnection
+    kind: has_one
+    via: api_keys
+  - to: AppleHealth
+    kind: has_one
+    via: apple_health
+  - to: AppointmentLocation
+    kind: has_many
+    via: appointment_locations
+  - to: AppointmentSetting
+    kind: has_one
+    via: appointment_setting
+  - to: AppointmentTypeCredit
+    kind: has_many
+    via: appointment_type_credits
+  - to: AppointmentType
+    kind: has_many
+    via: appointment_types
+  - to: Appointment
+    kind: has_many
+    via: appointments
+  - to: Task
+    kind: has_many
+    via: assigned_tasks
+  - to: BillingItem
+    kind: has_many
+    via: billing_items
+  - to: Brand
+    kind: has_one
+    via: brand
+  - to: ExternalCalendar
+    kind: has_one
+    via: broken_synced_cal
+  - to: CallReference
+    kind: has_many
+    via: call_references
+  - to: ShapaConnection
+    kind: has_one
+    via: clearstep_connection
+  - to: ClientRestrictionAuthorization
+    kind: has_many
+    via: client_restriction_authorizations
+  - to: ClientSource
+    kind: has_one
+    via: client_source
+  - to: Task
+    kind: has_many
+    via: completed_tasks
+  - to: CourseMembership
+    kind: has_one
+    via: course_membership_via_course
+  - to: CourseMembership
+    kind: has_many
+    via: course_memberships
+  - to: CourseMembership
+    kind: has_many
+    via: course_membrships
+  - to: GeneratedSummary
+    kind: has_one
+    via: current_summary
+  - to: CustomEmail
+    kind: has_many
+    via: custom_custom_emails
+  - to: CustomMetric
+    kind: has_many
+    via: custom_metrics
+  - to: OnboardingFlow
+    kind: has_one
+    via: default_onboarding_flow
+  - to: Pharmacy
+    kind: has_one
+    via: default_pharmacy
+  - to: DexcomConnection
+    kind: has_one
+    via: dexcom_connection
+  - to: Diagnosis
+    kind: has_many
+    via: diagnoses
+  - to: User
+    kind: has_one
+    via: dietitian
+  - to: Brand
+    kind: has_one
+    via: displayed_brand
+  - to: ErxClinic
+    kind: has_one
+    via: erx_clinic
+  - to: FamilyHistoryCondition
+    kind: has_many
+    via: family_history_conditions
+  - to: FaxLineRequest
+    kind: has_one
+    via: fax_line_request
+  - to: FeatureToggle
+    kind: has_one
+    via: feature_toggle
+  - to: Fitbit
+    kind: has_one
+    via: fitbit
+  - to: FormAnswerGroup
+    kind: has_many
+    via: form_answer_groups
+  - to: fullscript
+    kind: has_one
+    via: fullscript
+  - to: ExternalCalendar
+    kind: has_one
+    via: google_calendar
+  - to: GoogleFit
+    kind: has_one
+    via: google_fit
+  - to: Immunization
+    kind: has_many
+    via: immunizations
+  - to: ImplantableDeviceUser
+    kind: has_many
+    via: implantable_devices_users
+  - to: Task
+    kind: has_many
+    via: incomplete_tasks
+  - to: InsuranceAuthorizationType
+    kind: has_one
+    via: insurance_authorization
+  - to: Appointment
+    kind: has_one
+    via: last_app
+  - to: BillingItem
+    kind: has_one
+    via: last_billing_item
+  - to: MobileHealthDataSnapshot
+    kind: has_one
+    via: last_mobile_health_data_snapshot
+  - to: AllergySensitivity
+    kind: has_one
+    via: last_updated_allergy
+  - to: NotificationContact
+    kind: has_many
+    via: linked_relatives
+  - to: Location
+    kind: has_one
+    via: location
+  - to: Location
+    kind: has_many
+    via: locations
+  - to: MobileHealthDataIntegration
+    kind: has_many
+    via: mobile_health_integrations
+  - to: Task
+    kind: has_many
+    via: my_tasks
+  - to: Appointment
+    kind: has_one
+    via: next_app
+  - to: OnboardingItem
+    kind: has_one
+    via: next_onboarding_step
+  - to: RecurringPayment
+    kind: has_one
+    via: next_recurring_payment
+  - to: NotificationContact
+    kind: has_many
+    via: notification_contacts
+  - to: NotificationSetting
+    kind: has_one
+    via: notification_setting
+  - to: OfferingCoupon
+    kind: has_many
+    via: offering_coupons
+  - to: Offering
+    kind: has_many
+    via: offerings
+  - to: OfficeallySftpAccount
+    kind: has_one
+    via: officeally_sftp_account
+  - to: Organization
+    kind: has_one
+    via: organization
+  - to: OrganizationMembership
+    kind: has_one
+    via: organization_membership
+  - to: OtherIdNumber
+    kind: has_one
+    via: other_id_number
+  - to: OtherIdNumber
+    kind: has_many
+    via: other_id_numbers
+  - to: User
+    kind: has_many
+    via: other_org_members
+  - to: User
+    kind: has_many
+    via: other_org_members_for_sharing
+  - to: User
+    kind: has_many
+    via: other_providers
+  - to: ExternalCalendar
+    kind: has_one
+    via: outlook
+  - to: User
+    kind: has_many
+    via: patients
+  - to: User
+    kind: has_many
+    via: patients_with_cc
+  - to: PlaceOfService
+    kind: has_one
+    via: place_of_service
+  - to: Policy
+    kind: has_many
+    via: policies
+  - to: Policy
+    kind: has_many
+    via: policiesOrderAscending
+  - to: Policy
+    kind: has_one
+    via: primary_insurance_policy
+  - to: TaxonomyCode
+    kind: has_one
+    via: primary_taxonomy_code
+  - to: Problem
+    kind: has_many
+    via: problems
+  - to: Profession
+    kind: has_many
+    via: professions
+  - to: ProviderAppointmentLocation
+    kind: has_many
+    via: provider_appointment_locations
+  - to: ProviderBio
+    kind: has_one
+    via: provider_bio
+  - to: ClientRestrictionAuthorization
+    kind: has_many
+    via: provider_restriction_authorizations
+  - to: User
+    kind: has_many
+    via: providers
+  - to: MealPlan
+    kind: has_many
+    via: purchased_meal_plans
+  - to: CustomEmail
+    kind: has_many
+    via: reactivation_emails
+  - to: Referral
+    kind: has_many
+    via: referrals
+  - to: ReferringPhysician
+    kind: has_many
+    via: referring_physicians
+  - to: ReportsDateFilterSelection
+    kind: has_one
+    via: reports_date_filter_selection
+  - to: ShapaConnection
+    kind: has_one
+    via: shapa_connection
+  - to: Specialty
+    kind: has_many
+    via: specialties
+  - to: StateLicense
+    kind: has_many
+    via: state_licenses
+  - to: StripeCustomerDetail
+    kind: has_one
+    via: stripe_customer_detail
+  - to: StripeCustomerDetail
+    kind: has_many
+    via: stripe_customer_details
+  - to: SubscriptionInstance
+    kind: has_one
+    via: subscription
+  - to: SubscriptionAccess
+    kind: has_one
+    via: subscription_access
+  - to: Location
+    kind: has_one
+    via: super_bill_location
+  - to: Location
+    kind: has_one
+    via: super_bill_patient_location
+  - to: User
+    kind: has_many
+    via: switchable_users
+  - to: Appointment
+    kind: has_many
+    via: upcoming_appointments
+  - to: RecurringPayment
+    kind: has_many
+    via: upcoming_payments
+  - to: UserGroup
+    kind: has_one
+    via: user_group
+  - to: UserGroup
+    kind: has_many
+    via: user_groups
+  - to: User
+    kind: has_one
+    via: user_who_invited_member
+  - to: WithingsConnection
+    kind: has_one
+    via: withings_connection
+- entity: Organization
+  description: An organization, that is an umbrella group for multiple providers
+  field_count: 67
+  deprecated_field_count: 0
+  id_reference_fields:
+  - onboarding_flow_id
+  - other_id
+  - owner_id
+  - parent_organization_id
+  - tax_id
+  - zus_builder_id
+  relationships:
+  - to: AcceptedInsurancePlanConnection
+    kind: has_one
+    via: accepted_insurance_plans
+  - to: User
+    kind: has_many
+    via: active_care_team_members
+  - to: User
+    kind: has_many
+    via: active_members_for_conversation
+  - to: AppointmentLocation
+    kind: has_many
+    via: appointment_locations
+  - to: AutomatedInsuranceBillingSetting
+    kind: has_one
+    via: automated_insurance_billing_setting
+  - to: BillingConfiguration
+    kind: has_one
+    via: billing_configuration
+  - to: CancellationReason
+    kind: has_many
+    via: cancellation_reasons
+  - to: CarePlanRecommendationCategory
+    kind: has_many
+    via: care_plan_recommendation_categories
+  - to: OrganizationConfigurationType
+    kind: has_one
+    via: configuration
+  - to: PdfLetterheadTemplate
+    kind: has_one
+    via: default_pdf_letterhead_template
+  - to: ELabsSettings
+    kind: has_one
+    via: e_labs_settings
+  - to: ErxClinicPaginationConnection
+    kind: has_one
+    via: erx_clinics
+  - to: InsurancePlan
+    kind: has_many
+    via: insurance_plans_used_by_organization_providers
+  - to: Location
+    kind: has_one
+    via: location
+  - to: OrganizationMembership
+    kind: has_many
+    via: only_active_organization_memberships
+  - to: User
+    kind: has_many
+    via: only_active_providers
+  - to: User
+    kind: has_many
+    via: only_active_standard
+  - to: User
+    kind: has_many
+    via: only_active_support
+  - to: OrganizationCptCodeType
+    kind: has_many
+    via: organization_cpt_codes
+  - to: OrganizationInfo
+    kind: has_one
+    via: organization_info
+  - to: OrganizationInfo
+    kind: has_many
+    via: organization_infos
+  - to: OrganizationMembership
+    kind: has_many
+    via: organization_memberships
+  - to: User
+    kind: has_one
+    via: owner
+  - to: SubscriptionInstance
+    kind: has_one
+    via: owner_subscription
+  - to: UserConnection
+    kind: has_one
+    via: paginated_users
+  - to: Organization
+    kind: has_one
+    via: parent_organization
+  - to: PdfLetterheadTemplate
+    kind: has_many
+    via: pdf_letterhead_templates
+  - to: PermissionTemplateType
+    kind: has_many
+    via: permission_templates
+  - to: InsurancePlanPaginationConnection
+    kind: has_one
+    via: provider_insurance_plans
+  - to: User
+    kind: has_many
+    via: providers
+  - to: User
+    kind: has_many
+    via: rupa_health_members
+  - to: Organization
+    kind: has_many
+    via: suborganizations
+  - to: Tag
+    kind: has_many
+    via: tags
+  - to: UserGroup
+    kind: has_many
+    via: user_groups
+  - to: User
+    kind: has_many
+    via: users
+- entity: OrganizationMembership
+  description: An organization membership
+  field_count: 128
+  deprecated_field_count: 2
+  relationships:
+  - to: Organization
+    kind: has_one
+    via: organization
+  - to: PermissionTemplateType
+    kind: has_one
+    via: permission_template
+  - to: User
+    kind: has_one
+    via: user
+- entity: UserGroup
+  description: A user group, returns basic info about the user group
+  field_count: 15
+  deprecated_field_count: 0
+  id_reference_fields:
+  - doc_share_id
+  - onboarding_flow_id
+  - user_ids
+  relationships:
+  - to: OnboardingFlow
+    kind: has_one
+    via: onboarding_flow
+  - to: RecurringForm
+    kind: has_many
+    via: recurring_forms
+  - to: User
+    kind: has_one
+    via: user
+  - to: User
+    kind: has_many
+    via: users
+  - to: User
+    kind: has_many
+    via: users_with_membership
+- entity: Appointment
+  description: An appointment object containing information about the appointment, including the attendees, date,
+    location, and more.
+  field_count: 112
+  deprecated_field_count: 4
+  id_reference_fields:
+  - appointment_location_id
+  - appointment_request_id
+  - appointment_type_id
+  - conversation_id
+  - initiator_id
+  - last_client_conversation_id
+  - last_updated_by_id
+  - organization_id
+  - other_party_id
+  - pm_status_last_changed_by_id
+  - recurring_appointment_id
+  - room_id
+  - session_id
+  - user_id
+  - zoom_meeting_id
+  relationships:
+  - to: AppointmentType
+    kind: has_one
+    via: appointment_type
+  - to: UserGroup
+    kind: has_many
+    via: assigned_groups
+  - to: AppointmentInclusionType
+    kind: has_many
+    via: attended_clients
+  - to: User
+    kind: has_many
+    via: attendees
+  - to: User
+    kind: has_many
+    via: attendees_on_waitlist
+  - to: CancellationReason
+    kind: has_one
+    via: cancellation_reason
+  - to: FormAnswerGroup
+    kind: has_one
+    via: filled_embed_form
+  - to: FormAnswerGroup
+    kind: has_one
+    via: form_answer_group
+  - to: FormAnswerGroup
+    kind: has_many
+    via: form_answer_groups
+  - to: GeneratedFormAnswerGroupType
+    kind: has_one
+    via: generated_form_answer_group
+  - to: GeneratedSummary
+    kind: has_one
+    via: generated_summary
+  - to: AppointmentPricingInfoType
+    kind: has_one
+    via: pricing_info
+  - to: User
+    kind: has_one
+    via: provider
+  - to: User
+    kind: has_many
+    via: providers
+  - to: RecurringAppointment
+    kind: has_one
+    via: recurring_appointment
+  - to: RequestedPayment
+    kind: has_one
+    via: requested_payment
+  - to: Transcript
+    kind: has_many
+    via: transcripts
+  - to: User
+    kind: has_one
+    via: user
+  - to: ZoomAppointment
+    kind: has_one
+    via: zoom_appointment
+  - to: ZoomCloudRecordingFile
+    kind: has_many
+    via: zoom_cloud_recording_files
+  - to: ZoomCoHostLink
+    kind: has_many
+    via: zoom_co_host_links
+- entity: AppointmentType
+  description: An object containing information about the type of appointment
+  field_count: 53
+  deprecated_field_count: 0
+  id_reference_fields:
+  - embed_question_form_id
+  - organization_id
+  - user_group_id
+  - user_id
+  relationships:
+  - to: AppointmentAutocompleteForm
+    kind: has_one
+    via: appointment_autocomplete_form
+  - to: AppointmentSetting
+    kind: has_one
+    via: appointment_setting
+  - to: AppointmentTypeCptCodeType
+    kind: has_one
+    via: appointment_type_cpt_code
+  - to: UserGroup
+    kind: has_many
+    via: bookable_groups
+  - to: AppointmentTypeFormConnection
+    kind: has_many
+    via: form_requests_after_appointment
+  - to: AppointmentTypeFormConnection
+    kind: has_many
+    via: form_requests_after_appointment_booking
+  - to: AppointmentTypeFormConnection
+    kind: has_many
+    via: form_requests_before_appointment
+  - to: PriceAndCptPriceType
+    kind: has_one
+    via: price_and_cpt_price
+  - to: AppointmentPricingInfoType
+    kind: has_one
+    via: pricing_info
+  - to: ProviderApptTypeConnection
+    kind: has_many
+    via: provider_appt_type_connections
+  - to: UserGroup
+    kind: has_one
+    via: user_group
+- entity: AppointmentSetting
+  description: Appointment Setting options that a provider can customize
+  field_count: 122
+  deprecated_field_count: 10
+  id_reference_fields:
+  - default_charting_template_id
+  - user_id
+  relationships:
+  - to: AcceptedInsurancePlan
+    kind: has_many
+    via: accepted_insurance_plans
+  - to: AppointmentLocation
+    kind: has_many
+    via: appointment_locations
+  - to: CalendarColorScheme
+    kind: has_many
+    via: calendar_color_schemes
+  - to: ContactType
+    kind: has_many
+    via: contact_type_overrides
+  - to: CustomModuleForm
+    kind: has_one
+    via: default_group_charting_template
+  - to: User
+    kind: has_one
+    via: owner
+  - to: VideoUrlDefault
+    kind: has_one
+    via: video_url_default
+- entity: Availability
+  description: An object containing availability ranges for a provider
+  field_count: 21
+  deprecated_field_count: 0
+  id_reference_fields:
+  - appointment_location_id
+  - appointment_type_id
+  - contact_type_id
+  - repeating_availability_id
+  - user_id
+  relationships:
+  - to: AppointmentType
+    kind: has_many
+    via: appointment_types
+  - to: User
+    kind: has_one
+    via: user
+- entity: RecurringAppointment
+  description: A Recurring Appointment
+  field_count: 7
+  deprecated_field_count: 0
+  id_reference_fields:
+  - previous_recurring_appointment_id
+  relationships:
+  - to: AppointmentPaginationConnection
+    kind: has_one
+    via: appointments
+- entity: Location
+  description: A location
+  field_count: 17
+  deprecated_field_count: 0
+  id_reference_fields:
+  - other_id
+  - place_of_service_id
+  - user_id
+  relationships:
+  - to: PlaceOfService
+    kind: has_one
+    via: place_of_service
+  - to: User
+    kind: has_one
+    via: user
+- entity: AppointmentLocation
+  description: A location where appointments are held
+  field_count: 6
+  deprecated_field_count: 0
+  id_reference_fields:
+  - appointment_setting_id
+  relationships:
+  - to: Room
+    kind: has_many
+    via: rooms
+- entity: CustomModuleForm
+  description: A template for a form, that can then be filled out
+  field_count: 22
+  deprecated_field_count: 0
+  id_reference_fields:
+  - external_id
+  relationships:
+  - to: CustomModule
+    kind: has_many
+    via: custom_modules
+  - to: FormAnswerGroup
+    kind: has_many
+    via: form_answer_groups
+  - to: User
+    kind: has_one
+    via: last_updated_by_user
+  - to: User
+    kind: has_one
+    via: user
+- entity: CustomModule
+  description: A question in a template
+  field_count: 24
+  deprecated_field_count: 0
+  id_reference_fields:
+  - custom_module_form_id
+  - custom_module_form_section_id
+  - external_id
+  - parent_custom_module_id
+  relationships:
+  - to: CustomModuleConditionType
+    kind: has_one
+    via: custom_module_condition
+  - to: CustomModuleForm
+    kind: has_one
+    via: custom_module_form
+  - to: FileAttachment
+    kind: has_one
+    via: file_attachment
+- entity: FormAnswerGroup
+  description: A completed form, with metadata about the completion, and the saved answers
+  field_count: 44
+  deprecated_field_count: 1
+  id_reference_fields:
+  - external_id
+  - user_id
+  relationships:
+  - to: Appointment
+    kind: has_one
+    via: appointment
+  - to: AutoscoredSectionType
+    kind: has_many
+    via: autoscored_sections
+  - to: ChartingNoteAddendumType
+    kind: has_many
+    via: charting_note_addendums
+  - to: Cms1500
+    kind: has_one
+    via: cms1500
+  - to: GeneratedSummary
+    kind: has_one
+    via: current_summary
+  - to: CustomModuleForm
+    kind: has_one
+    via: custom_module_form
+  - to: Document
+    kind: has_many
+    via: documents
+  - to: User
+    kind: has_one
+    via: filler
+  - to: FormAnswerGroupAuditEvent
+    kind: has_many
+    via: form_answer_group_audit_events
+  - to: Prescription
+    kind: has_many
+    via: form_answer_group_prescriptions
+  - to: FormAnswerGroupSigning
+    kind: has_many
+    via: form_answer_group_signings
+  - to: FormAnswerGroupUserConnection
+    kind: has_many
+    via: form_answer_group_users_connections
+  - to: FormAnswer
+    kind: has_many
+    via: form_answers
+  - to: User
+    kind: has_many
+    via: group_appointment_attendees
+  - to: IndividualClientType
+    kind: has_many
+    via: individual_client_notes
+  - to: IndividualClientType
+    kind: has_one
+    via: individual_note
+  - to: LabOrder
+    kind: has_many
+    via: lab_orders
+  - to: User
+    kind: has_one
+    via: locked_by
+  - to: NarxCheck
+    kind: has_many
+    via: narx_checks
+  - to: Offering
+    kind: has_one
+    via: offering_with_recommended_products
+  - to: RequestedFormCompletion
+    kind: has_one
+    via: requested_form_completion
+  - to: User
+    kind: has_one
+    via: user
+- entity: FormAnswer
+  description: An answer in a filled form
+  field_count: 16
+  deprecated_field_count: 0
+  id_reference_fields:
+  - conditional_custom_module_id
+  - custom_module_id
+  - user_id
+  relationships:
+  - to: CustomModule
+    kind: has_one
+    via: custom_module
+  - to: FileAttachment
+    kind: has_many
+    via: file_attachments
+  - to: FormAnswerGroup
+    kind: has_one
+    via: form_answer_group
+- entity: CarePlan
+  description: A Care Plan
+  field_count: 20
+  deprecated_field_count: 0
+  relationships:
+  - to: User
+    kind: has_one
+    via: creator
+  - to: Document
+    kind: has_many
+    via: documents
+  - to: FeatureToggle
+    kind: has_one
+    via: feature_toggle
+  - to: Goal
+    kind: has_many
+    via: goals
+  - to: User
+    kind: has_one
+    via: patient
+  - to: Recommendation
+    kind: has_many
+    via: recommendations
+  - to: UserGroup
+    kind: has_one
+    via: user_group
+- entity: Goal
+  description: a goal
+  field_count: 27
+  deprecated_field_count: 3
+  id_reference_fields:
+  - created_user_id
+  - parent_id
+  - source_template_id
+  - user_id
+  relationships:
+  - to: User
+    kind: has_one
+    via: created_user
+  - to: GoalHistory
+    kind: has_many
+    via: goal_histories
+  - to: Reminder
+    kind: has_one
+    via: reminder
+  - to: GoalStreakInfo
+    kind: has_many
+    via: streak_info
+  - to: Goal
+    kind: has_many
+    via: subgoals
+  - to: User
+    kind: has_one
+    via: user
+- entity: GoalHistory
+  description: a goal history
+  field_count: 13
+  deprecated_field_count: 0
+  id_reference_fields:
+  - goal_id
+  - user_id
+  relationships:
+  - to: Goal
+    kind: has_one
+    via: goal
+  - to: User
+    kind: has_one
+    via: user
+- entity: Entry
+  description: A post about a client, with different category options
+  field_count: 42
+  deprecated_field_count: 0
+  id_reference_fields:
+  - added_by_user_id
+  - external_id
+  relationships:
+  - to: User
+    kind: has_one
+    via: added_by_user
+  - to: Comment
+    kind: has_many
+    via: comments
+  - to: Meal
+    kind: has_many
+    via: meals
+  - to: User
+    kind: has_one
+    via: poster
+  - to: Entry
+    kind: has_many
+    via: subentries
+- entity: AllergySensitivity
+  description: An allergy/sensitivity/preference for a client
+  field_count: 16
+  deprecated_field_count: 1
+  relationships:
+  - to: User
+    kind: has_one
+    via: created_by
+- entity: Diagnosis
+  description: A diagnosis
+  field_count: 15
+  deprecated_field_count: 0
+  id_reference_fields:
+  - custom_module_id
+  - icd_code_id
+  - icd_codes_cms1500s_id
+  - icd_codes_super_bill_id
+  - user_id
+  relationships:
+  - to: IcdCode
+    kind: has_one
+    via: icd_code
+  - to: User
+    kind: has_one
+    via: user
+- entity: MedicationType
+  description: Medication belonging to client
+  field_count: 20
+  deprecated_field_count: 0
+  id_reference_fields:
+  - user_id
+- entity: Immunization
+  description: User immunization
+  field_count: 7
+  deprecated_field_count: 0
+  id_reference_fields:
+  - user_id
+- entity: LabOrder
+  description: Lab Order Object
+  field_count: 28
+  deprecated_field_count: 0
+  id_reference_fields:
+  - lta_id
+  - rupa_order_id
+  relationships:
+  - to: Document
+    kind: has_one
+    via: document
+  - to: FormAnswerGroup
+    kind: has_one
+    via: form_answer_group
+  - to: LabOption
+    kind: has_many
+    via: lab_options
+  - to: LabResult
+    kind: has_many
+    via: lab_results
+  - to: User
+    kind: has_one
+    via: orderer
+  - to: User
+    kind: has_one
+    via: patient
+  - to: Document
+    kind: has_one
+    via: pdf_document
+  - to: Document
+    kind: has_one
+    via: requisition_document
+  - to: User
+    kind: has_one
+    via: reviewing_provider
+- entity: Cms1500
+  description: A CMS1500 claim
+  field_count: 56
+  deprecated_field_count: 1
+  id_reference_fields:
+  - billing_provider_id
+  - dietitian_id
+  - form_answer_group_id
+  - organization_info_id
+  - patient_id
+  - rendering_provider_other_id
+  - service_location_id
+  relationships:
+  - to: Organization
+    kind: has_one
+    via: billing_provider
+  - to: ClaimMdMessage
+    kind: has_many
+    via: claim_md_rejection_messages
+  - to: ClaimSubmission
+    kind: has_many
+    via: claim_submissions
+  - to: Cms1500Policy
+    kind: has_many
+    via: cms1500_policies
+  - to: CptCodesCms1500
+    kind: has_many
+    via: cpt_codes_cms1500s
+  - to: EraConnection
+    kind: has_one
+    via: eras
+  - to: CptCodesCms1500
+    kind: has_many
+    via: estimated_cpt_fees_for_user
+  - to: IcdCodesCms1500
+    kind: has_many
+    via: icd_codes_cms1500s
+  - to: OrganizationInfo
+    kind: has_one
+    via: org_info
+  - to: User
+    kind: has_one
+    via: patient
+  - to: ReferralInfo
+    kind: has_one
+    via: referral_info
+  - to: User
+    kind: has_one
+    via: rendering_provider
+  - to: OtherIdNumber
+    kind: has_one
+    via: rendering_provider_other_id_object
+  - to: Location
+    kind: has_one
+    via: service_location
+- entity: Claim
+  description: A claim (CMS1500) with snapshot data for submitted claims, live data for drafts, and correction tracking
+  field_count: 39
+  deprecated_field_count: 0
+  id_reference_fields:
+  - original_claim_id
+  - primary_claim_id
+  relationships:
+  - to: ClaimProvider
+    kind: has_one
+    via: billing_provider
+  - to: ClaimMdMessage
+    kind: has_many
+    via: claim_md_rejection_messages
+  - to: ClaimSubmissionPaginationConnection
+    kind: has_one
+    via: claim_submissions
+  - to: CoordinationOfBenefits
+    kind: has_one
+    via: coordination_of_benefits
+  - to: ClaimPaginationConnection
+    kind: has_one
+    via: correction_claims
+  - to: ClaimDiagnosis
+    kind: has_many
+    via: diagnoses
+  - to: OrganizationInfo
+    kind: has_one
+    via: org_info
+  - to: Claim
+    kind: has_one
+    via: original_claim
+  - to: ClaimPatient
+    kind: has_one
+    via: patient
+  - to: ClaimPolicy
+    kind: has_many
+    via: policies
+  - to: Claim
+    kind: has_one
+    via: primary_claim
+  - to: ClaimReferralInfo
+    kind: has_one
+    via: referral_info
+  - to: ClaimProvider
+    kind: has_one
+    via: referring_provider
+  - to: ClaimProvider
+    kind: has_one
+    via: rendering_provider
+  - to: ClaimServiceLine
+    kind: has_many
+    via: service_lines
+  - to: ClaimLocation
+    kind: has_one
+    via: service_location
+- entity: Policy
+  description: A policy
+  field_count: 48
+  deprecated_field_count: 1
+  id_reference_fields:
+  - holder_location_id
+  - insurance_card_back_id
+  - insurance_card_front_id
+  - insurance_plan_id
+  - payer_location_id
+  - user_id
+  relationships:
+  - to: Benefit
+    kind: has_many
+    via: benefits
+  - to: CallReference
+    kind: has_one
+    via: call_reference
+  - to: ClaimEligibilityCheckErrors
+    kind: has_many
+    via: claim_eligibility_check_errors
+  - to: CptCodesPolicy
+    kind: has_many
+    via: cpt_codes_policies
+  - to: Location
+    kind: has_one
+    via: holder_location
+  - to: IcdCodesPolicy
+    kind: has_many
+    via: icd_codes_policies
+  - to: InsuranceAuthorizationType
+    kind: has_one
+    via: insurance_authorization
+  - to: InsurancePlan
+    kind: has_one
+    via: insurance_plan
+  - to: ClaimEligibilityCheck
+    kind: has_one
+    via: last_eligibility_check
+  - to: EligibilityCheck
+    kind: has_one
+    via: latest_eligibility_check
+  - to: Location
+    kind: has_one
+    via: payer_location
+  - to: Referral
+    kind: has_one
+    via: referral
+  - to: User
+    kind: has_one
+    via: user
+- entity: InsurancePlan
+  description: An Insurance Plan
+  field_count: 13
+  deprecated_field_count: 3
+  id_reference_fields:
+  - change_healthcare_eligibility_payer_id
+  - change_healthcare_payer_id
+  - name_and_id
+  - payer_id
+  relationships:
+  - to: Location
+    kind: has_one
+    via: default_payer_location
+  - to: User
+    kind: has_one
+    via: user
+- entity: AcceptedInsurancePlan
+  description: Accepted Insurance Plan
+  field_count: 2
+  deprecated_field_count: 0
+  relationships:
+  - to: InsurancePlan
+    kind: has_one
+    via: insurance_plan
+- entity: BillingItem
+  description: Billing
+  field_count: 53
+  deprecated_field_count: 1
+  id_reference_fields:
+  - cpt_codes_super_bills_id
+  - invoice_id
+  - offering_coupon_id
+  - offering_id
+  - recipient_id
+  - requested_payment_id
+  - sender_id
+  - stripe_charge_id
+  relationships:
+  - to: ChargeBack
+    kind: has_many
+    via: charge_backs
+  - to: Offering
+    kind: has_one
+    via: offering
+  - to: OfferingCoupon
+    kind: has_one
+    via: offering_coupon
+  - to: User
+    kind: has_one
+    via: provider
+  - to: User
+    kind: has_one
+    via: recipient
+  - to: RecurringPayment
+    kind: has_one
+    via: recurring_payment
+  - to: RefundItem
+    kind: has_many
+    via: refund_items
+  - to: RequestedPayer
+    kind: has_one
+    via: requested_payer
+  - to: RequestedPayment
+    kind: has_one
+    via: requested_payment
+  - to: User
+    kind: has_one
+    via: sender
+  - to: BillingItem
+    kind: has_one
+    via: successful_retried_payment
+  - to: UserPackageSelection
+    kind: has_one
+    via: user_package_selection
+- entity: RequestedPayment
+  description: A request, from a provider to a client, to make a payment
+  field_count: 45
+  deprecated_field_count: 1
+  id_reference_fields:
+  - appointment_id
+  - billing_item_id
+  - cms1500_id
+  - invoice_id
+  - offering_id
+  - recipient_id
+  - requested_payer_id
+  - sender_id
+  relationships:
+  - to: Appointment
+    kind: has_one
+    via: appointment
+  - to: BillingItem
+    kind: has_many
+    via: billing_items
+  - to: InvoiceCms1500LineItem
+    kind: has_many
+    via: cms1500_line_items
+  - to: Offering
+    kind: has_one
+    via: offering
+  - to: RequestedPayer
+    kind: has_one
+    via: other_requested_payer
+  - to: User
+    kind: has_one
+    via: recipient
+  - to: RequestedPayer
+    kind: has_one
+    via: requested_payer
+  - to: RequestedPaymentTemplate
+    kind: has_one
+    via: requested_payment_template
+  - to: User
+    kind: has_one
+    via: sender
+  - to: UserPackageSelection
+    kind: has_one
+    via: user_package_selection
+  - to: WriteOff
+    kind: has_many
+    via: write_offs
+- entity: Offering
+  description: Offering (or Package)
+  field_count: 61
+  deprecated_field_count: 0
+  id_reference_fields:
+  - course_id
+  - embed_question_form_id
+  - living_plate_meal_plan_id
+  - offering_image_id
+  - on_purchase_ifs_tag_id
+  - selected_image_id
+  - user_group_id
+  - user_id
+  relationships:
+  - to: MealPlan
+    kind: has_many
+    via: meal_plan_options
+  - to: OfferingCourse
+    kind: has_many
+    via: offering_courses
+  - to: OfferingGroupVisibility
+    kind: has_many
+    via: offering_group_visibilities
+  - to: OfferingImage
+    kind: has_one
+    via: offering_image
+  - to: OfferingInclude
+    kind: has_many
+    via: offering_includes
+  - to: OfferingLabOption
+    kind: has_many
+    via: offering_lab_options
+  - to: OfferingProduct
+    kind: has_many
+    via: offering_products
+  - to: User
+    kind: has_one
+    via: user
+- entity: CourseMembership
+  description: Relationship between a user and a course
+  field_count: 15
+  deprecated_field_count: 0
+  id_reference_fields:
+  - course_id
+  - user_id
+  relationships:
+  - to: Course
+    kind: has_one
+    via: course
+  - to: CourseItem
+    kind: has_one
+    via: next_incomplete_item
+  - to: CourseItem
+    kind: has_one
+    via: next_next_incomplete_item
+  - to: User
+    kind: has_one
+    via: user
+- entity: Course
+  description: A Course
+  field_count: 34
+  deprecated_field_count: 1
+  id_reference_fields:
+  - user_id
+  relationships:
+  - to: CourseMembership
+    kind: has_many
+    via: clients
+  - to: CourseGroup
+    kind: has_many
+    via: clients_groups
+  - to: CourseBenefit
+    kind: has_many
+    via: course_benefits
+  - to: CourseGroup
+    kind: has_many
+    via: course_groups
+  - to: CourseItem
+    kind: has_many
+    via: course_items
+  - to: CourseMembership
+    kind: has_many
+    via: course_memberships
+  - to: Offering
+    kind: has_many
+    via: offerings
+  - to: CourseMembership
+    kind: has_many
+    via: ungrouped_course_memberships
+  - to: UserGroup
+    kind: has_many
+    via: user_groups
+  - to: User
+    kind: has_many
+    via: users
+- entity: CourseGroup
+  description: Relationship between a user group and a course
+  field_count: 7
+  deprecated_field_count: 0
+  relationships:
+  - to: Course
+    kind: has_one
+    via: course
+  - to: UserGroup
+    kind: has_one
+    via: user_group
+- entity: CourseItem
+  description: A Course Item
+  field_count: 31
+  deprecated_field_count: 1
+  id_reference_fields:
+  - course_id
+  - incomplete_course_item_id
+  - item_id
+  - user_id
+  relationships:
+  - to: CompletedCourseItem
+    kind: has_one
+    via: completed_course_item
+  - to: Course
+    kind: has_one
+    via: course
+  - to: CourseItem
+    kind: has_one
+    via: first_incomplete_required_module
+  - to: CourseItem
+    kind: has_one
+    via: next_item
+  - to: CourseItem
+    kind: has_one
+    via: prev_item
+- entity: Conversation
+  description: An association between conversation holders
+  field_count: 23
+  deprecated_field_count: 0
+  id_reference_fields:
+  - dietitian_id
+  - last_note_viewed_id
+  - patient_id
+  relationships:
+  - to: User
+    kind: has_one
+    via: closed_by
+  - to: ConversationMembership
+    kind: has_many
+    via: conversation_memberships
+  - to: ConversationMembership
+    kind: has_one
+    via: current_user_conversation_membership
+  - to: User
+    kind: has_many
+    via: first_four_invitees
+  - to: User
+    kind: has_many
+    via: invitees
+  - to: Note
+    kind: has_many
+    via: notes
+  - to: User
+    kind: has_one
+    via: owner
+  - to: UserGroup
+    kind: has_many
+    via: user_groups
+- entity: Note
+  description: Chat message object
+  field_count: 22
+  deprecated_field_count: 1
+  id_reference_fields:
+  - conversation_id
+  - document_id
+  - recipient_id
+  - scheduled_conversation_id
+  - user_id
+  relationships:
+  - to: User
+    kind: has_one
+    via: creator
+  - to: User
+    kind: has_one
+    via: on_behalf_user
+  - to: Task
+    kind: has_one
+    via: task
+- entity: ConversationMembership
+  description: ConversationMembership entry, returns basic info related to conversation participant
+  field_count: 19
+  deprecated_field_count: 0
+  id_reference_fields:
+  - conversation_id
+  - user_id
+  relationships:
+  - to: Conversation
+    kind: has_one
+    via: convo
+  - to: User
+    kind: has_one
+    via: convo_updated_at
+  - to: User
+    kind: has_one
+    via: creator
+  - to: Task
+    kind: has_one
+    via: last_task
+- entity: Document
+  description: A document file that contains an attachment and information about the attachment
+  field_count: 34
+  deprecated_field_count: 0
+  id_reference_fields:
+  - rel_user_id
+  relationships:
+  - to: DocumentDraft
+    kind: has_one
+    via: draft
+  - to: FormAnswerGroup
+    kind: has_many
+    via: form_answer_groups
+  - to: DocumentViewing
+    kind: has_many
+    via: opens
+  - to: User
+    kind: has_one
+    via: owner
+  - to: User
+    kind: has_one
+    via: rel_user
+  - to: UserConnection
+    kind: has_one
+    via: shareable_org_members
+  - to: UserConnection
+    kind: has_one
+    via: shareable_patients
+  - to: UserGroupPaginationConnection
+    kind: has_one
+    via: shareable_user_groups
+  - to: UserGroup
+    kind: has_many
+    via: user_groups
+  - to: User
+    kind: has_many
+    via: users
+- entity: FileAttachment
+  description: A file attachment representing an uploaded file
+  field_count: 2
+  deprecated_field_count: 0
+- entity: Task
+  description: Tasks for providers to create, complete, and optionally assign to client profiles
+  field_count: 31
+  deprecated_field_count: 0
+  id_reference_fields:
+  - client_id
+  - completed_by_id
+  - created_by_generator_id
+  - created_by_id
+  - user_id
+  relationships:
+  - to: UserConnection
+    kind: has_one
+    via: assignees
+  - to: User
+    kind: has_one
+    via: client
+  - to: InternalCommentPaginationConnection
+    kind: has_one
+    via: comments
+  - to: User
+    kind: has_one
+    via: completed_by
+  - to: User
+    kind: has_one
+    via: creator
+  - to: Note
+    kind: has_one
+    via: note
+  - to: Reminder
+    kind: has_one
+    via: reminder
+  - to: User
+    kind: has_one
+    via: user
+- entity: ReceivedFax
+  description: A Received Fax
+  field_count: 8
+  deprecated_field_count: 0
+- entity: SentFax
+  description: A Sent Fax
+  field_count: 11
+  deprecated_field_count: 0
+  id_reference_fields:
+  - parsed_form_answer_group_ids
+  relationships:
+  - to: User
+    kind: has_one
+    via: patient
+  - to: User
+    kind: has_one
+    via: sender
+- entity: Announcement
+  description: Announcements created by providers for client consumption
+  field_count: 13
+  deprecated_field_count: 0
+  id_reference_fields:
+  - user_group_ids
+  relationships:
+  - to: User
+    kind: has_one
+    via: last_toggled_by
+  - to: User
+    kind: has_one
+    via: user
+- entity: Tag
+  description: A custom tag that can be applied on a user
+  field_count: 12
+  deprecated_field_count: 0
+  relationships:
+  - to: User
+    kind: has_many
+    via: tagged_users
+  - to: User
+    kind: has_one
+    via: user
+- entity: ApiKey
+  description: A created API Key
+  field_count: 5
+  deprecated_field_count: 0
+- entity: Webhook
+  description: A configured webhook
+  field_count: 9
+  deprecated_field_count: 0
+  relationships:
+  - to: WebhookEvent
+    kind: has_many
+    via: webhook_events

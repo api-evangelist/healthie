@@ -1,0 +1,71 @@
+generated: '2026-08-14'
+method: searched
+source: https://docs.gethealthie.com/guides/react-sdks/
+docs: https://docs.gethealthie.com/guides/react-sdks/
+note: >-
+  Healthie's client-side offering is a React component library, not a server-side SDK. The components
+  are pre-built UI surfaces that talk to the Healthie GraphQL API directly, so a partner can embed a
+  working Healthie experience inside their own branded application rather than rebuilding scheduling,
+  chat and forms from the schema. Healthie is explicit that the SDK does not supply application
+  scaffolding — the developer still owns routing, layout and state.
+loader:
+  package: '@healthie/sdk'
+  registry: npm
+  install: npm install @healthie/sdk
+  alt_install: yarn add @healthie/sdk
+  version: 1.5.4
+  published: '2026-08-03'
+  url: https://www.npmjs.com/package/@healthie/sdk
+  framework: React
+  detail: packages/healthie-packages.yml
+requires: A working understanding of the Healthie GraphQL API; the components are a view over it, not
+  a replacement for it.
+family_count: 3
+families:
+- family: Chat
+  description: Pre-built messaging surface over Healthie conversations and notes.
+  backing_graphql:
+  - Query.conversations
+  - Query.notes
+  - Mutation.createConversation
+  - Mutation.createNote
+  - Subscription.noteAddedSubscription
+  legacy_package: '@healthie/chat'
+  legacy_note: >-
+    A standalone @healthie/chat package exists on npm but was last published 2023-12-18 and is
+    superseded by the consolidated @healthie/sdk.
+- family: Forms
+  description: Intake and charting form rendering and submission.
+  backing_graphql:
+  - Query.customModuleForms
+  - Query.formAnswerGroups
+  - Mutation.createFormAnswerGroup
+  - Subscription.formAnswerGroupModifiedSubscription
+- family: Booking & Buying
+  description: Calendar and Packages — appointment booking and offering purchase flows.
+  backing_graphql:
+  - Query.availableSlotsForRange
+  - Query.appointmentTypes
+  - Query.offerings
+  - Mutation.createAppointment
+  - Mutation.completeCheckout
+reference_implementations:
+- name: Healthie Sample Booking Widget
+  url: https://github.com/healthie/healthie_sample_booking_widget
+  language: TypeScript
+  first_party: true
+  last_pushed: '2026-01-06'
+  description: A worked example of embedding Healthie booking in an external application.
+gaps:
+- React only. No web components, no vanilla-JS embed, no framework-agnostic loader, so a non-React
+  front end cannot use any of this.
+- No hosted/prebuilt drop-in surface (no hosted booking page or hosted intake link documented as a
+  component).
+- The component reference is a single narrative page — there is no per-component prop reference, no
+  Storybook, and no changelog for the SDK separate from the npm release history.
+x-evidence:
+  fetched: '2026-08-14'
+  urls:
+  - {url: 'https://docs.gethealthie.com/guides/react-sdks/', http_status: 200}
+  - {url: 'https://registry.npmjs.org/@healthie/sdk', http_status: 200}
+  - {url: 'https://api.github.com/repos/healthie/healthie_sample_booking_widget', http_status: 200}

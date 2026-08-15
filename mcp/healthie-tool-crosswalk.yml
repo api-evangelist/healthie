@@ -1,0 +1,107 @@
+generated: '2026-08-14'
+method: derived
+source:
+- mcp/healthie-mcp.yml
+- graphql/healthie-schema.graphql
+note: >-
+  Healthie publishes NO OpenAPI, so this crosswalk binds MCP tools to GraphQL operations rather than
+  to REST operationIds. It also documents an unusual shape worth recording explicitly: Dev Assist is
+  a CODE-EXECUTION MCP server, so the mapping is not tool-to-operation but tool-to-whole-surface. One
+  tool (execute_healthie_code) fans out to all 813 GraphQL root fields; there is no per-operation tool
+  an agent can discover from tools/list, and therefore no per-operation inputSchema. An agent that
+  reads only the MCP manifest learns two tool names and nothing about appointments, claims or charting
+  — the schema is the contract, and it is reachable only by calling healthie.search() /
+  healthie.introspect() at runtime.
+surfaces:
+  openapi:
+    present: false
+    note: Healthie publishes no OpenAPI/Swagger. Probes of /openapi.json, /swagger.json, /api-docs,
+      /docs and /v1/openapi.json on api.gethealthie.com all returned 404.
+  graphql:
+    endpoint: https://api.gethealthie.com/graphql
+    sandbox_endpoint: https://staging-api.gethealthie.com/graphql
+    introspection: open-on-sandbox
+    introspection_note: >-
+      Anonymous introspection is REFUSED on production (HTTP 500) but OPEN on the sandbox endpoint,
+      which serves the same schema. The SDL in graphql/healthie-schema.graphql was captured that way.
+    sdl: graphql/healthie-schema.graphql
+  mcp:
+    server: healthie-dev-assist
+    transport: stdio
+    endpoint: null
+    tools_list: not-remotely-callable
+    tools_list_note: >-
+      There is no hosted endpoint to POST tools/list at. The tool definitions below were read from the
+      server's own source (src/server.ts) in the first-party repository, which is the authoritative
+      published definition.
+  websockets:
+    endpoint: wss://ws.gethealthie.com/subscriptions
+    sandbox_endpoint: wss://ws.staging.gethealthie.com/subscriptions
+    protocol: ActionCable / AnyCable (NOT the Apollo websocket subprotocol)
+    note: 6 GraphQL subscriptions; no MCP tool exposes them.
+crosswalk:
+- tool: execute_healthie_code
+  category: schema-exploration-and-execution
+  graphql:
+  - __schema (introspection, via healthie.search / healthie.introspect)
+  - 'Query.* (all 386 root query fields, via healthie.query)'
+  - 'Mutation.* (all 427 root mutation fields, via healthie.mutate)'
+  rest: []
+  binding: graphql-passthrough
+  confidence: high
+  note: >-
+    Not a 1:1 binding. The tool accepts arbitrary TypeScript and executes it against a sandboxed
+    `healthie` client, so its effective surface is the entire GraphQL root. Its declared inputSchema
+    is a single `code: string` — the real operation parameters live in the GraphQL schema and are
+    resolved at runtime, not declared to the MCP client.
+- tool: regenerate_schema
+  category: schema-maintenance
+  graphql:
+  - __schema (full introspection query against the live API)
+  rest: []
+  binding: graphql-introspection
+  confidence: high
+  note: Maintenance tool for the server's local schema cache; touches no business resource.
+mcp_only: []
+mcp_only_note: >-
+  No MCP tool exposes a capability the GraphQL API does not. Dev Assist is strictly a projection of
+  the GraphQL surface.
+graphql_only:
+- capability: GraphQL subscriptions (real-time)
+  operations:
+  - noteAddedSubscription
+  - conversationChangedSubscription
+  - conversationMembershipAddedSubscription
+  - conversationMembershipUpdatedSubscription
+  - formAnswerGroupModifiedSubscription
+  - userUpdatedSubscription
+  reason: >-
+    Subscriptions require a long-lived ActionCable/AnyCable WebSocket connection. The Dev Assist
+    sandbox has no network access of its own and exposes only query/mutate, so no MCP client can
+    subscribe.
+- capability: File upload (Upload scalar)
+  reason: >-
+    The schema declares an `Upload` scalar used by document/attachment mutations. Multipart uploads
+    cannot be expressed through the code-execution sandbox's JSON-only query/mutate methods.
+- capability: Webhook event delivery
+  reason: >-
+    Webhook subscriptions are managed via GraphQL but delivery is an outbound HTTP POST to the
+    subscriber. Documented in asyncapi/healthie-webhooks-asyncapi.yml, not addressable from MCP.
+rest_only: []
+rest_only_note: Not applicable — Healthie publishes no REST surface.
+coverage:
+  mcp_tools_declared: 2
+  mcp_tools_bound: 2
+  mcp_only: 0
+  graphql_queries_total: 386
+  graphql_mutations_total: 427
+  graphql_subscriptions_total: 6
+  graphql_root_fields_total: 819
+  graphql_root_fields_with_a_dedicated_tool: 0
+  graphql_root_fields_reachable_via_execute_healthie_code: 813
+  agent_discoverable_operations: 0
+  agent_discoverable_note: >-
+    Zero operations are discoverable from the MCP tool list alone. This is a deliberate design
+    trade (fewer turns, cached schema) and not a defect, but it does mean MCP tool discovery gives
+    an agent no capability map for Healthie — graphql/healthie-schema.graphql is the only artifact
+    that does.
