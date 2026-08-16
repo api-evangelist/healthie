@@ -5,7 +5,7 @@
       "source": "https://www.gethealthie.com/blog/rss.xml",
       "feed_url": "https://www.gethealthie.com/blog/rss.xml",
       "title": "",
-      "saved": 0,
+      "saved": 5,
       "method": "feed"
     },
     {
@@ -13,9 +13,10 @@
       "feed_url": "https://x.com/gethealthie",
       "title": "",
       "saved": 0,
-      "method": "none"
+      "method": "none",
+      "error": "parse_failed"
     }
   ],
-  "post_count": 58,
-  "fetched": "2026-08-06T14:08:46Z"
+  "post_count": 63,
+  "fetched": "2026-08-15T12:11:08Z"
 }
