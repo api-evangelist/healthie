@@ -52,6 +52,32 @@ tags:
 - Scheduling
 - Telehealth
 - Wellness
+- Webhook
+tags_raw:
+- API-First
+- Appointments
+- Billing
+- Care Plans
+- Charting
+- Claims
+- Clinical
+- Digital Health
+- EHR
+- EMR
+- Forms
+- GraphQL
+- Health Tech
+- Healthcare
+- Insurance
+- Intake
+- Online Programs
+- Patient Engagement
+- Patient Portal
+- Practice Management
+- Programs
+- Scheduling
+- Telehealth
+- Wellness
 - Webhooks
 created: '2026-05-25'
 modified: '2026-08-14'
@@ -75,6 +101,23 @@ apis:
   humanURL: https://docs.gethealthie.com/
   baseURL: https://api.gethealthie.com/graphql
   tags:
+  - Appointments
+  - Billing
+  - Charting
+  - Claims
+  - Clients
+  - EHR
+  - Forms
+  - GraphQL
+  - Healthcare
+  - Insurance
+  - Patients
+  - Practice Management
+  - Programs
+  - Scheduling
+  - Telehealth
+  - Webhook
+  tags_raw:
   - Appointments
   - Billing
   - Charting
