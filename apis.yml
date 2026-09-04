@@ -37,7 +37,7 @@ url: https://raw.githubusercontent.com/api-evangelist/healthie/refs/heads/main/a
 type: Index
 kind: contract
 access: 3rd-Party
-position: Consumer
+position: Consuming
 tags:
 - API-First
 - Appointments
