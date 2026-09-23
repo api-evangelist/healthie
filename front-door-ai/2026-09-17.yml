@@ -1,0 +1,26 @@
+# Front Door AI Index — healthie — 2026-09-17
+# AI vocabulary counted on the provider's root page. Generated; do not edit.
+# `score` is null unless ownership is `own` — see front_door_ai.py.
+front_door_ai:
+  slug: healthie
+  lexicon_version: '1.0'
+  probed_at: '2026-09-17'
+  host: www.gethealthie.com
+  final_host: www.gethealthie.com
+  ownership: own
+  owner: healthie
+  shares_host_with: null
+  inherited_from: null
+  verdict: scored
+  score: 1
+  host_score: 1
+  density: 1.44
+  words: 695
+  tiers:
+    agentic: 0
+    core: 1
+    model: 0
+  ambiguous: 2
+  top_terms:
+    intelligence: 2
+    AI: 1
