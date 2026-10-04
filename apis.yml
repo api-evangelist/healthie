@@ -64,6 +64,8 @@ tags:
 - Telehealth
 - Wellness
 - Webhook
+- Real-Time
+- FHIR
 tags_raw:
 - API-First
 - Appointments
@@ -90,6 +92,8 @@ tags_raw:
 - Telehealth
 - Wellness
 - Webhooks
+- Real-Time
+- FHIR
 created: '2026-05-25'
 modified: '2026-08-14'
 specificationVersion: '0.23'
