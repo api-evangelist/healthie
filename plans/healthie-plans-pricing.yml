@@ -107,3 +107,46 @@ x-evidence:
   - {url: 'https://www.gethealthie.com/pricing', http_status: 200}
   - {url: 'https://www.gethealthie.com/plus/api-for-digital-health-startups', http_status: 200}
   - {url: 'https://secure.gethealthie.com/users/sign_up/provider', http_status: 200}
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - seat
+  - subscription
+  units:
+  - seat
+  plans:
+  - name: Core
+    access: other
+    model: seat
+    model_how: derived
+    units:
+    - seat
+    periods: []
+  - name: Essentials
+    access: other
+    model: seat
+    model_how: derived
+    units:
+    - seat
+    periods: []
+  - name: Plus
+    access: other
+    model: seat
+    model_how: derived
+    units:
+    - seat
+    periods: []
+  - name: Group
+    access: other
+    model: subscription
+    model_how: derived
+    units:
+    - other
+    periods: []
+  - name: Healthie+ (Startups and Enterprise)
+    access: other
+    model: unstated
+    model_how: derived
+    units: []
+    periods: []
