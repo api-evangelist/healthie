@@ -1,0 +1,157 @@
+generated: '2026-10-12'
+method: derived
+source: the pre-flight dossier, apis.yml pointers, spec servers, well-known, vendors -- nothing fetched here
+generator: derive-hosts.py
+summary:
+  hosts: 11
+  own: 7
+  other_domain: 1
+  platform: 3
+  roles:
+  - api
+  - docs
+  - identity
+  - other
+  - source
+  - status
+  - support
+  - website
+hosts:
+- host: api.gethealthie.com
+  found_by:
+  - apis[]
+  types: []
+  serves:
+  - api
+  registrable_domain: gethealthie.com
+  role: api
+  relation: own
+- host: docs.gethealthie.com
+  found_by:
+  - pointer
+  - apis[]
+  - vendor-detect
+  types:
+  - GettingStarted
+  - APIReference
+  - Deprecation
+  - Documentation
+  - Authentication
+  - Versioning
+  - RateLimits
+  - Webhooks
+  - Environments
+  - ChangeLog
+  serves:
+  - docs
+  - hosting
+  vendor: netlify
+  registrable_domain: gethealthie.com
+  role: docs
+  relation: own
+- host: github.com
+  found_by:
+  - pointer
+  types:
+  - Tools
+  - CodeExamples
+  - GitHubOrganization
+  serves: []
+  registrable_domain: github.com
+  role: source
+  relation: platform
+- host: harbor.gethealthie.com
+  found_by:
+  - pointer
+  types:
+  - Integrations
+  serves: []
+  registrable_domain: gethealthie.com
+  role: other
+  relation: own
+- host: help.gethealthie.com
+  found_by:
+  - pointer
+  - vendor-detect
+  types:
+  - Support
+  serves:
+  - support
+  vendor: helpscout
+  registrable_domain: gethealthie.com
+  role: support
+  relation: own
+- host: portal.productboard.com
+  found_by:
+  - pointer
+  types:
+  - Roadmap
+  serves: []
+  registrable_domain: productboard.com
+  role: other
+  relation: other-domain
+- host: secure.gethealthie.com
+  found_by:
+  - pointer
+  - vendor-detect
+  types:
+  - SignUp
+  - Login
+  serves:
+  - cdn
+  vendor: cloudfront
+  registrable_domain: gethealthie.com
+  role: identity
+  relation: own
+- host: status.gethealthie.com
+  found_by:
+  - pointer
+  - vendor-detect
+  types:
+  - StatusPage
+  serves:
+  - hosting
+  - status-page
+  vendor: vercel
+  registrable_domain: gethealthie.com
+  role: status
+  relation: own
+- host: www.gethealthie.com
+  found_by:
+  - pointer
+  - vendor-detect
+  types:
+  - Newsroom
+  - Compliance
+  - DeveloperPortal
+  - TermsOfService
+  - PrivacyPolicy
+  - Website
+  - Portal
+  - Blog
+  - Pricing
+  - Plans
+  serves:
+  - cdn
+  vendor: cloudflare
+  registrable_domain: gethealthie.com
+  role: website
+  relation: own
+- host: www.npmjs.com
+  found_by:
+  - pointer
+  types:
+  - SDKs
+  serves: []
+  registrable_domain: npmjs.com
+  role: other
+  relation: platform
+- host: x.com
+  found_by:
+  - pointer
+  types:
+  - X
+  serves: []
+  registrable_domain: x.com
+  role: other
+  relation: platform

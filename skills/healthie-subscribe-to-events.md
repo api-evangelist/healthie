@@ -1,5 +1,5 @@
 ---
-name: Subscribe to Healthie events
+name: healthie-subscribe-to-events
 description: Register and verify Healthie webhooks, and open a GraphQL subscription over Healthie's ActionCable/AnyCable WebSocket, so an integration reacts to changes instead of polling.
 api: graphql/healthie-schema.graphql
 endpoint: https://api.gethealthie.com/graphql

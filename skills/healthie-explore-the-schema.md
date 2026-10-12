@@ -1,5 +1,5 @@
 ---
-name: Explore the Healthie GraphQL schema
+name: healthie-explore-the-schema
 description: Find the right Healthie query or mutation out of 819 root fields without burning turns — using the saved SDL, the hosted explorer, or the first-party Dev Assist MCP server.
 api: graphql/healthie-schema.graphql
 endpoint: https://api.gethealthie.com/graphql

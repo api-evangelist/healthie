@@ -1,5 +1,5 @@
 ---
-name: Book a Healthie appointment
+name: healthie-book-an-appointment
 description: Find real availability for a Healthie provider and book, reschedule or cancel an appointment through the Healthie GraphQL API, handling Healthie's validation-message pattern and its lack of idempotency.
 api: graphql/healthie-schema.graphql
 endpoint: https://api.gethealthie.com/graphql

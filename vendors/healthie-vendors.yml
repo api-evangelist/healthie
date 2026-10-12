@@ -1,0 +1,94 @@
+generated: '2026-10-12'
+method: probed
+source: pre-flight dossier (docs platform, portal detections) + CNAME chains and response headers of the hosts apis.yml names
+registry: all/0-working/vendors.yml
+areas_vocabulary:
+- documentation
+- developer-portal
+- api-gateway
+- cdn
+- hosting
+- sdk-generation
+- api-collections
+- status-page
+- support
+- community
+- identity
+- mcp-hosting
+vendors:
+- vendor: cloudflare
+  name: Cloudflare
+  area: cdn
+  host: www.gethealthie.com
+  evidence: header:cf-ray
+  signal: header
+  confidence: high
+  kin_score:
+  - https_enforced
+  - hsts
+- vendor: cloudfront
+  name: Amazon CloudFront
+  area: cdn
+  host: secure.gethealthie.com
+  evidence: cname:cloudfront.net
+  signal: cname
+  confidence: high
+  kin_score: []
+- vendor: netlify
+  name: Netlify
+  area: hosting
+  host: docs.gethealthie.com
+  evidence: cname:netlify.app
+  signal: cname
+  confidence: high
+  kin_score: []
+- vendor: vercel
+  name: Vercel
+  area: hosting
+  host: status.gethealthie.com
+  evidence: cname:vercel-dns.com
+  signal: cname
+  confidence: high
+  kin_score: []
+- vendor: incident-io
+  name: incident.io
+  area: status-page
+  host: status.gethealthie.com
+  evidence: cname:incident.io
+  signal: cname
+  confidence: high
+  kin_score:
+  - status_page
+- vendor: helpscout
+  name: Help Scout
+  area: support
+  host: help.gethealthie.com
+  evidence: cname:helpscoutdocs.com
+  signal: cname
+  confidence: high
+  kin_score:
+  - support_channel
+reliance:
+  areas_vendor_served:
+  - cdn
+  - hosting
+  - status-page
+  - support
+  vendor_count: 6
+  areas_observed: 12
+  share_of_observable_areas: 0.333
+  note: areas where a third party was DETECTED serving this provider; an area absent here was either self-run or not observed, and this script
+    cannot tell those apart
+checked:
+- 'docs-platform: not probed'
+- docs.gethealthie.com (GettingStarted)
+- docs.gethealthie.com (APIReference)
+- www.gethealthie.com (DeveloperPortal)
+- help.gethealthie.com (Support)
+- secure.gethealthie.com (SignUp)
+- secure.gethealthie.com (Login)
+- www.gethealthie.com (Website)
+- www.gethealthie.com (Portal)
+- docs.gethealthie.com (Documentation)
+- status.gethealthie.com (StatusPage)
+- api.gethealthie.com (baseURL)

@@ -1,0 +1,149 @@
+generated: '2026-10-12'
+method: searched
+source:
+- https://www.gethealthie.com/healthie-harbor
+checked:
+- https://composio.dev/toolkits/healthie
+- https://monid.ai/tools/healthie
+- https://n8n.io/integrations/healthie/
+- https://www.gethealthie.com/healthie-harbor
+- https://zapier.com/apps/healthie/integrations
+summary: 16 third-party partner apps listed in Healthie Harbor, Healthie's own integration marketplace; Healthie-built
+  listings (AI Scribe, Bridge, E-Fax, E-Rx, E-Labs Direct) excluded.
+marketplace_apps:
+- marketplace: own
+  name: Healthie Harbor
+  url: https://www.gethealthie.com/healthie-harbor
+  app_count: null
+  note: store page renders "0 Partners" counter client-side; 21 listings read from the rendered page on 2026-10-12
+  app: Healthie Harbor
+edges:
+- partner_name: EtherFax Flow
+  partner: null
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Zus Health
+  partner: null
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Metriport
+  partner: metriport
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Cliexa
+  partner: null
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Morf Health
+  partner: null
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Beam Health
+  partner: null
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Keragon
+  partner: null
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Tellescope
+  partner: null
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: ZocDoc
+  partner: zocdoc
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Fullscript
+  partner: null
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Claim.MD
+  partner: claim-md
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Candid Health
+  partner: candid-health
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Orderly Health
+  partner: null
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: OURA
+  partner: null
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Alvee
+  partner: null
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+- partner_name: Carebeam
+  partner: null
+  type: marketplace
+  marketplace: healthie-harbor
+  channel: partner-built
+  relationship: platform-app
+  direction: unknown
+  evidence: https://www.gethealthie.com/healthie-harbor
+templates: []

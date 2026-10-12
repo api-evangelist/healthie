@@ -1,0 +1,7 @@
+generated: '2026-10-12'
+method: none
+source:
+- https://www.gethealthie.com/subprocessors
+- https://www.gethealthie.com/.well-known/security.txt
+note: Conventional paths probed 2026-10-12 returned 404 (subprocessors, security.txt); no substantive horizontal-regulatory artifact found. HIPAA/GDPR claims are recorded in security/healthie-trust-center.yml.
+signals: {}

@@ -1,5 +1,5 @@
 ---
-name: Bill a Healthie visit and file the claim
+name: healthie-bill-and-claim
 description: Take a completed Healthie visit through charge capture, patient payment, insurance eligibility and a CMS-1500 claim, using only operations that exist in the Healthie GraphQL schema.
 api: graphql/healthie-schema.graphql
 endpoint: https://api.gethealthie.com/graphql

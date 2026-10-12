@@ -1,5 +1,5 @@
 ---
-name: Onboard a Healthie client
+name: healthie-onboard-a-client
 description: Create a client record in Healthie, send them the practice's intake forms, and read back the completed submissions through the GraphQL API.
 api: graphql/healthie-schema.graphql
 endpoint: https://api.gethealthie.com/graphql

@@ -1,11 +1,11 @@
 generated: '2026-08-14'
 method: derived
 source: graphql/healthie-schema.graphql
-note: Entity-relationship graph derived from the Healthie GraphQL schema captured by anonymous introspection of
-  the Healthie sandbox endpoint (https://staging-api.gethealthie.com/graphql). Healthie publishes no OpenAPI; the
-  GraphQL SDL is the machine-readable contract, so relationships are read from object-typed fields (has_one / has_many)
-  and from *_id reference fields rather than from OpenAPI $ref links. Only the core clinical/practice-management
-  entities are enumerated here — the full schema carries 865 object types.
+note: Entity-relationship graph derived from the Healthie GraphQL schema captured by anonymous introspection of the Healthie
+  sandbox endpoint (https://staging-api.gethealthie.com/graphql). Healthie publishes no OpenAPI; the GraphQL SDL is the machine-readable
+  contract, so relationships are read from object-typed fields (has_one / has_many) and from *_id reference fields rather
+  than from OpenAPI $ref links. Only the core clinical/practice-management entities are enumerated here — the full schema
+  carries 865 object types.
 schema:
   object_types: 865
   input_types: 552
@@ -26,10 +26,10 @@ schema:
 conventions:
   id_type: ID (GraphQL ID scalar; standardized from String/Int in API version 2024-07-01)
   datetime_type: ISO8601DateTime / ISO8601Date (standardized in API version 2024-07-01)
-  mutation_payload: 'Every mutation returns a payload carrying the mutated object plus messages: [FieldError] (field
-    + message) for validation failures.'
-  pagination_type: PageInfo (start_cursor / end_cursor / has_next_page / has_previous_page) on Connection fields;
-    legacy offset pagination on older list fields.
+  mutation_payload: 'Every mutation returns a payload carrying the mutated object plus messages: [FieldError] (field + message)
+    for validation failures.'
+  pagination_type: PageInfo (start_cursor / end_cursor / has_next_page / has_previous_page) on Connection fields; legacy offset
+    pagination on older list fields.
 entity_count: 48
 entities:
 - entity: User
@@ -394,6 +394,7 @@ entities:
   - to: WithingsConnection
     kind: has_one
     via: withings_connection
+  name: User
 - entity: Organization
   description: An organization, that is an umbrella group for multiple providers
   field_count: 67
@@ -511,6 +512,7 @@ entities:
   - to: User
     kind: has_many
     via: users
+  name: Organization
 - entity: OrganizationMembership
   description: An organization membership
   field_count: 128
@@ -525,6 +527,7 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: OrganizationMembership
 - entity: UserGroup
   description: A user group, returns basic info about the user group
   field_count: 15
@@ -549,9 +552,10 @@ entities:
   - to: User
     kind: has_many
     via: users_with_membership
+  name: UserGroup
 - entity: Appointment
-  description: An appointment object containing information about the appointment, including the attendees, date,
-    location, and more.
+  description: An appointment object containing information about the appointment, including the attendees, date, location,
+    and more.
   field_count: 112
   deprecated_field_count: 4
   id_reference_fields:
@@ -634,6 +638,7 @@ entities:
   - to: ZoomCoHostLink
     kind: has_many
     via: zoom_co_host_links
+  name: Appointment
 - entity: AppointmentType
   description: An object containing information about the type of appointment
   field_count: 53
@@ -677,6 +682,7 @@ entities:
   - to: UserGroup
     kind: has_one
     via: user_group
+  name: AppointmentType
 - entity: AppointmentSetting
   description: Appointment Setting options that a provider can customize
   field_count: 122
@@ -706,6 +712,7 @@ entities:
   - to: VideoUrlDefault
     kind: has_one
     via: video_url_default
+  name: AppointmentSetting
 - entity: Availability
   description: An object containing availability ranges for a provider
   field_count: 21
@@ -723,6 +730,7 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: Availability
 - entity: RecurringAppointment
   description: A Recurring Appointment
   field_count: 7
@@ -733,6 +741,7 @@ entities:
   - to: AppointmentPaginationConnection
     kind: has_one
     via: appointments
+  name: RecurringAppointment
 - entity: Location
   description: A location
   field_count: 17
@@ -748,6 +757,7 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: Location
 - entity: AppointmentLocation
   description: A location where appointments are held
   field_count: 6
@@ -758,6 +768,7 @@ entities:
   - to: Room
     kind: has_many
     via: rooms
+  name: AppointmentLocation
 - entity: CustomModuleForm
   description: A template for a form, that can then be filled out
   field_count: 22
@@ -777,6 +788,7 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: CustomModuleForm
 - entity: CustomModule
   description: A question in a template
   field_count: 24
@@ -796,6 +808,7 @@ entities:
   - to: FileAttachment
     kind: has_one
     via: file_attachment
+  name: CustomModule
 - entity: FormAnswerGroup
   description: A completed form, with metadata about the completion, and the saved answers
   field_count: 44
@@ -870,6 +883,7 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: FormAnswerGroup
 - entity: FormAnswer
   description: An answer in a filled form
   field_count: 16
@@ -888,6 +902,7 @@ entities:
   - to: FormAnswerGroup
     kind: has_one
     via: form_answer_group
+  name: FormAnswer
 - entity: CarePlan
   description: A Care Plan
   field_count: 20
@@ -914,6 +929,7 @@ entities:
   - to: UserGroup
     kind: has_one
     via: user_group
+  name: CarePlan
 - entity: Goal
   description: a goal
   field_count: 27
@@ -942,6 +958,7 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: Goal
 - entity: GoalHistory
   description: a goal history
   field_count: 13
@@ -956,6 +973,7 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: GoalHistory
 - entity: Entry
   description: A post about a client, with different category options
   field_count: 42
@@ -979,6 +997,7 @@ entities:
   - to: Entry
     kind: has_many
     via: subentries
+  name: Entry
 - entity: AllergySensitivity
   description: An allergy/sensitivity/preference for a client
   field_count: 16
@@ -987,6 +1006,7 @@ entities:
   - to: User
     kind: has_one
     via: created_by
+  name: AllergySensitivity
 - entity: Diagnosis
   description: A diagnosis
   field_count: 15
@@ -1004,18 +1024,21 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: Diagnosis
 - entity: MedicationType
   description: Medication belonging to client
   field_count: 20
   deprecated_field_count: 0
   id_reference_fields:
   - user_id
+  name: MedicationType
 - entity: Immunization
   description: User immunization
   field_count: 7
   deprecated_field_count: 0
   id_reference_fields:
   - user_id
+  name: Immunization
 - entity: LabOrder
   description: Lab Order Object
   field_count: 28
@@ -1051,6 +1074,7 @@ entities:
   - to: User
     kind: has_one
     via: reviewing_provider
+  name: LabOrder
 - entity: Cms1500
   description: A CMS1500 claim
   field_count: 56
@@ -1106,6 +1130,7 @@ entities:
   - to: Location
     kind: has_one
     via: service_location
+  name: Cms1500
 - entity: Claim
   description: A claim (CMS1500) with snapshot data for submitted claims, live data for drafts, and correction tracking
   field_count: 39
@@ -1162,6 +1187,7 @@ entities:
   - to: ClaimLocation
     kind: has_one
     via: service_location
+  name: Claim
 - entity: Policy
   description: A policy
   field_count: 48
@@ -1213,6 +1239,7 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: Policy
 - entity: InsurancePlan
   description: An Insurance Plan
   field_count: 13
@@ -1229,6 +1256,7 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: InsurancePlan
 - entity: AcceptedInsurancePlan
   description: Accepted Insurance Plan
   field_count: 2
@@ -1237,6 +1265,7 @@ entities:
   - to: InsurancePlan
     kind: has_one
     via: insurance_plan
+  name: AcceptedInsurancePlan
 - entity: BillingItem
   description: Billing
   field_count: 53
@@ -1287,6 +1316,7 @@ entities:
   - to: UserPackageSelection
     kind: has_one
     via: user_package_selection
+  name: BillingItem
 - entity: RequestedPayment
   description: A request, from a provider to a client, to make a payment
   field_count: 45
@@ -1334,6 +1364,7 @@ entities:
   - to: WriteOff
     kind: has_many
     via: write_offs
+  name: RequestedPayment
 - entity: Offering
   description: Offering (or Package)
   field_count: 61
@@ -1372,6 +1403,7 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: Offering
 - entity: CourseMembership
   description: Relationship between a user and a course
   field_count: 15
@@ -1392,6 +1424,7 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: CourseMembership
 - entity: Course
   description: A Course
   field_count: 34
@@ -1429,6 +1462,7 @@ entities:
   - to: User
     kind: has_many
     via: users
+  name: Course
 - entity: CourseGroup
   description: Relationship between a user group and a course
   field_count: 7
@@ -1440,6 +1474,7 @@ entities:
   - to: UserGroup
     kind: has_one
     via: user_group
+  name: CourseGroup
 - entity: CourseItem
   description: A Course Item
   field_count: 31
@@ -1465,6 +1500,7 @@ entities:
   - to: CourseItem
     kind: has_one
     via: prev_item
+  name: CourseItem
 - entity: Conversation
   description: An association between conversation holders
   field_count: 23
@@ -1498,6 +1534,7 @@ entities:
   - to: UserGroup
     kind: has_many
     via: user_groups
+  name: Conversation
 - entity: Note
   description: Chat message object
   field_count: 22
@@ -1518,6 +1555,7 @@ entities:
   - to: Task
     kind: has_one
     via: task
+  name: Note
 - entity: ConversationMembership
   description: ConversationMembership entry, returns basic info related to conversation participant
   field_count: 19
@@ -1538,6 +1576,7 @@ entities:
   - to: Task
     kind: has_one
     via: last_task
+  name: ConversationMembership
 - entity: Document
   description: A document file that contains an attachment and information about the attachment
   field_count: 34
@@ -1575,10 +1614,12 @@ entities:
   - to: User
     kind: has_many
     via: users
+  name: Document
 - entity: FileAttachment
   description: A file attachment representing an uploaded file
   field_count: 2
   deprecated_field_count: 0
+  name: FileAttachment
 - entity: Task
   description: Tasks for providers to create, complete, and optionally assign to client profiles
   field_count: 31
@@ -1614,10 +1655,12 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: Task
 - entity: ReceivedFax
   description: A Received Fax
   field_count: 8
   deprecated_field_count: 0
+  name: ReceivedFax
 - entity: SentFax
   description: A Sent Fax
   field_count: 11
@@ -1631,6 +1674,7 @@ entities:
   - to: User
     kind: has_one
     via: sender
+  name: SentFax
 - entity: Announcement
   description: Announcements created by providers for client consumption
   field_count: 13
@@ -1644,6 +1688,7 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: Announcement
 - entity: Tag
   description: A custom tag that can be applied on a user
   field_count: 12
@@ -1655,10 +1700,12 @@ entities:
   - to: User
     kind: has_one
     via: user
+  name: Tag
 - entity: ApiKey
   description: A created API Key
   field_count: 5
   deprecated_field_count: 0
+  name: ApiKey
 - entity: Webhook
   description: A configured webhook
   field_count: 9
@@ -1667,3 +1714,1613 @@ entities:
   - to: WebhookEvent
     kind: has_many
     via: webhook_events
+  name: Webhook
+relationships:
+- from: User
+  to: CarePlan
+  type: has_one
+  via: active_care_plan
+- from: User
+  to: CarePlan
+  type: has_one
+  via: active_group_care_plan
+- from: User
+  to: User
+  type: has_many
+  via: active_patients
+- from: User
+  to: Tag
+  type: has_many
+  via: active_tags
+- from: User
+  to: CustomSidebarOverride
+  type: has_many
+  via: additional_client_profile_items
+- from: User
+  to: CustomSidebarOverride
+  type: has_many
+  via: additional_header_dropdown_items
+- from: User
+  to: CustomSidebarOverride
+  type: has_many
+  via: additional_quick_profile_items
+- from: User
+  to: CustomSidebarOverride
+  type: has_many
+  via: additional_sidebar_items
+- from: User
+  to: AdvanceAppointmentPrice
+  type: has_many
+  via: advance_appointment_prices
+- from: User
+  to: Affiliate
+  type: has_one
+  via: affiliate
+- from: User
+  to: AllergySensitivity
+  type: has_many
+  via: allergy_sensitivities
+- from: User
+  to: Announcement
+  type: has_many
+  via: announcements
+- from: User
+  to: ApiKeyPaginationConnection
+  type: has_one
+  via: api_keys
+- from: User
+  to: AppleHealth
+  type: has_one
+  via: apple_health
+- from: User
+  to: AppointmentLocation
+  type: has_many
+  via: appointment_locations
+- from: User
+  to: AppointmentSetting
+  type: has_one
+  via: appointment_setting
+- from: User
+  to: AppointmentTypeCredit
+  type: has_many
+  via: appointment_type_credits
+- from: User
+  to: AppointmentType
+  type: has_many
+  via: appointment_types
+- from: User
+  to: Appointment
+  type: has_many
+  via: appointments
+- from: User
+  to: Task
+  type: has_many
+  via: assigned_tasks
+- from: User
+  to: BillingItem
+  type: has_many
+  via: billing_items
+- from: User
+  to: Brand
+  type: has_one
+  via: brand
+- from: User
+  to: ExternalCalendar
+  type: has_one
+  via: broken_synced_cal
+- from: User
+  to: CallReference
+  type: has_many
+  via: call_references
+- from: User
+  to: ShapaConnection
+  type: has_one
+  via: clearstep_connection
+- from: User
+  to: ClientRestrictionAuthorization
+  type: has_many
+  via: client_restriction_authorizations
+- from: User
+  to: ClientSource
+  type: has_one
+  via: client_source
+- from: User
+  to: Task
+  type: has_many
+  via: completed_tasks
+- from: User
+  to: CourseMembership
+  type: has_one
+  via: course_membership_via_course
+- from: User
+  to: CourseMembership
+  type: has_many
+  via: course_memberships
+- from: User
+  to: CourseMembership
+  type: has_many
+  via: course_membrships
+- from: User
+  to: GeneratedSummary
+  type: has_one
+  via: current_summary
+- from: User
+  to: CustomEmail
+  type: has_many
+  via: custom_custom_emails
+- from: User
+  to: CustomMetric
+  type: has_many
+  via: custom_metrics
+- from: User
+  to: OnboardingFlow
+  type: has_one
+  via: default_onboarding_flow
+- from: User
+  to: Pharmacy
+  type: has_one
+  via: default_pharmacy
+- from: User
+  to: DexcomConnection
+  type: has_one
+  via: dexcom_connection
+- from: User
+  to: Diagnosis
+  type: has_many
+  via: diagnoses
+- from: User
+  to: User
+  type: has_one
+  via: dietitian
+- from: User
+  to: Brand
+  type: has_one
+  via: displayed_brand
+- from: User
+  to: ErxClinic
+  type: has_one
+  via: erx_clinic
+- from: User
+  to: FamilyHistoryCondition
+  type: has_many
+  via: family_history_conditions
+- from: User
+  to: FaxLineRequest
+  type: has_one
+  via: fax_line_request
+- from: User
+  to: FeatureToggle
+  type: has_one
+  via: feature_toggle
+- from: User
+  to: Fitbit
+  type: has_one
+  via: fitbit
+- from: User
+  to: FormAnswerGroup
+  type: has_many
+  via: form_answer_groups
+- from: User
+  to: fullscript
+  type: has_one
+  via: fullscript
+- from: User
+  to: ExternalCalendar
+  type: has_one
+  via: google_calendar
+- from: User
+  to: GoogleFit
+  type: has_one
+  via: google_fit
+- from: User
+  to: Immunization
+  type: has_many
+  via: immunizations
+- from: User
+  to: ImplantableDeviceUser
+  type: has_many
+  via: implantable_devices_users
+- from: User
+  to: Task
+  type: has_many
+  via: incomplete_tasks
+- from: User
+  to: InsuranceAuthorizationType
+  type: has_one
+  via: insurance_authorization
+- from: User
+  to: Appointment
+  type: has_one
+  via: last_app
+- from: User
+  to: BillingItem
+  type: has_one
+  via: last_billing_item
+- from: User
+  to: MobileHealthDataSnapshot
+  type: has_one
+  via: last_mobile_health_data_snapshot
+- from: User
+  to: AllergySensitivity
+  type: has_one
+  via: last_updated_allergy
+- from: User
+  to: NotificationContact
+  type: has_many
+  via: linked_relatives
+- from: User
+  to: Location
+  type: has_one
+  via: location
+- from: User
+  to: Location
+  type: has_many
+  via: locations
+- from: User
+  to: MobileHealthDataIntegration
+  type: has_many
+  via: mobile_health_integrations
+- from: User
+  to: Task
+  type: has_many
+  via: my_tasks
+- from: User
+  to: Appointment
+  type: has_one
+  via: next_app
+- from: User
+  to: OnboardingItem
+  type: has_one
+  via: next_onboarding_step
+- from: User
+  to: RecurringPayment
+  type: has_one
+  via: next_recurring_payment
+- from: User
+  to: NotificationContact
+  type: has_many
+  via: notification_contacts
+- from: User
+  to: NotificationSetting
+  type: has_one
+  via: notification_setting
+- from: User
+  to: OfferingCoupon
+  type: has_many
+  via: offering_coupons
+- from: User
+  to: Offering
+  type: has_many
+  via: offerings
+- from: User
+  to: OfficeallySftpAccount
+  type: has_one
+  via: officeally_sftp_account
+- from: User
+  to: Organization
+  type: has_one
+  via: organization
+- from: User
+  to: OrganizationMembership
+  type: has_one
+  via: organization_membership
+- from: User
+  to: OtherIdNumber
+  type: has_one
+  via: other_id_number
+- from: User
+  to: OtherIdNumber
+  type: has_many
+  via: other_id_numbers
+- from: User
+  to: User
+  type: has_many
+  via: other_org_members
+- from: User
+  to: User
+  type: has_many
+  via: other_org_members_for_sharing
+- from: User
+  to: User
+  type: has_many
+  via: other_providers
+- from: User
+  to: ExternalCalendar
+  type: has_one
+  via: outlook
+- from: User
+  to: User
+  type: has_many
+  via: patients
+- from: User
+  to: User
+  type: has_many
+  via: patients_with_cc
+- from: User
+  to: PlaceOfService
+  type: has_one
+  via: place_of_service
+- from: User
+  to: Policy
+  type: has_many
+  via: policies
+- from: User
+  to: Policy
+  type: has_many
+  via: policiesOrderAscending
+- from: User
+  to: Policy
+  type: has_one
+  via: primary_insurance_policy
+- from: User
+  to: TaxonomyCode
+  type: has_one
+  via: primary_taxonomy_code
+- from: User
+  to: Problem
+  type: has_many
+  via: problems
+- from: User
+  to: Profession
+  type: has_many
+  via: professions
+- from: User
+  to: ProviderAppointmentLocation
+  type: has_many
+  via: provider_appointment_locations
+- from: User
+  to: ProviderBio
+  type: has_one
+  via: provider_bio
+- from: User
+  to: ClientRestrictionAuthorization
+  type: has_many
+  via: provider_restriction_authorizations
+- from: User
+  to: User
+  type: has_many
+  via: providers
+- from: User
+  to: MealPlan
+  type: has_many
+  via: purchased_meal_plans
+- from: User
+  to: CustomEmail
+  type: has_many
+  via: reactivation_emails
+- from: User
+  to: Referral
+  type: has_many
+  via: referrals
+- from: User
+  to: ReferringPhysician
+  type: has_many
+  via: referring_physicians
+- from: User
+  to: ReportsDateFilterSelection
+  type: has_one
+  via: reports_date_filter_selection
+- from: User
+  to: ShapaConnection
+  type: has_one
+  via: shapa_connection
+- from: User
+  to: Specialty
+  type: has_many
+  via: specialties
+- from: User
+  to: StateLicense
+  type: has_many
+  via: state_licenses
+- from: User
+  to: StripeCustomerDetail
+  type: has_one
+  via: stripe_customer_detail
+- from: User
+  to: StripeCustomerDetail
+  type: has_many
+  via: stripe_customer_details
+- from: User
+  to: SubscriptionInstance
+  type: has_one
+  via: subscription
+- from: User
+  to: SubscriptionAccess
+  type: has_one
+  via: subscription_access
+- from: User
+  to: Location
+  type: has_one
+  via: super_bill_location
+- from: User
+  to: Location
+  type: has_one
+  via: super_bill_patient_location
+- from: User
+  to: User
+  type: has_many
+  via: switchable_users
+- from: User
+  to: Appointment
+  type: has_many
+  via: upcoming_appointments
+- from: User
+  to: RecurringPayment
+  type: has_many
+  via: upcoming_payments
+- from: User
+  to: UserGroup
+  type: has_one
+  via: user_group
+- from: User
+  to: UserGroup
+  type: has_many
+  via: user_groups
+- from: User
+  to: User
+  type: has_one
+  via: user_who_invited_member
+- from: User
+  to: WithingsConnection
+  type: has_one
+  via: withings_connection
+- from: Organization
+  to: AcceptedInsurancePlanConnection
+  type: has_one
+  via: accepted_insurance_plans
+- from: Organization
+  to: User
+  type: has_many
+  via: active_care_team_members
+- from: Organization
+  to: User
+  type: has_many
+  via: active_members_for_conversation
+- from: Organization
+  to: AppointmentLocation
+  type: has_many
+  via: appointment_locations
+- from: Organization
+  to: AutomatedInsuranceBillingSetting
+  type: has_one
+  via: automated_insurance_billing_setting
+- from: Organization
+  to: BillingConfiguration
+  type: has_one
+  via: billing_configuration
+- from: Organization
+  to: CancellationReason
+  type: has_many
+  via: cancellation_reasons
+- from: Organization
+  to: CarePlanRecommendationCategory
+  type: has_many
+  via: care_plan_recommendation_categories
+- from: Organization
+  to: OrganizationConfigurationType
+  type: has_one
+  via: configuration
+- from: Organization
+  to: PdfLetterheadTemplate
+  type: has_one
+  via: default_pdf_letterhead_template
+- from: Organization
+  to: ELabsSettings
+  type: has_one
+  via: e_labs_settings
+- from: Organization
+  to: ErxClinicPaginationConnection
+  type: has_one
+  via: erx_clinics
+- from: Organization
+  to: InsurancePlan
+  type: has_many
+  via: insurance_plans_used_by_organization_providers
+- from: Organization
+  to: Location
+  type: has_one
+  via: location
+- from: Organization
+  to: OrganizationMembership
+  type: has_many
+  via: only_active_organization_memberships
+- from: Organization
+  to: User
+  type: has_many
+  via: only_active_providers
+- from: Organization
+  to: User
+  type: has_many
+  via: only_active_standard
+- from: Organization
+  to: User
+  type: has_many
+  via: only_active_support
+- from: Organization
+  to: OrganizationCptCodeType
+  type: has_many
+  via: organization_cpt_codes
+- from: Organization
+  to: OrganizationInfo
+  type: has_one
+  via: organization_info
+- from: Organization
+  to: OrganizationInfo
+  type: has_many
+  via: organization_infos
+- from: Organization
+  to: OrganizationMembership
+  type: has_many
+  via: organization_memberships
+- from: Organization
+  to: User
+  type: has_one
+  via: owner
+- from: Organization
+  to: SubscriptionInstance
+  type: has_one
+  via: owner_subscription
+- from: Organization
+  to: UserConnection
+  type: has_one
+  via: paginated_users
+- from: Organization
+  to: Organization
+  type: has_one
+  via: parent_organization
+- from: Organization
+  to: PdfLetterheadTemplate
+  type: has_many
+  via: pdf_letterhead_templates
+- from: Organization
+  to: PermissionTemplateType
+  type: has_many
+  via: permission_templates
+- from: Organization
+  to: InsurancePlanPaginationConnection
+  type: has_one
+  via: provider_insurance_plans
+- from: Organization
+  to: User
+  type: has_many
+  via: providers
+- from: Organization
+  to: User
+  type: has_many
+  via: rupa_health_members
+- from: Organization
+  to: Organization
+  type: has_many
+  via: suborganizations
+- from: Organization
+  to: Tag
+  type: has_many
+  via: tags
+- from: Organization
+  to: UserGroup
+  type: has_many
+  via: user_groups
+- from: Organization
+  to: User
+  type: has_many
+  via: users
+- from: OrganizationMembership
+  to: Organization
+  type: has_one
+  via: organization
+- from: OrganizationMembership
+  to: PermissionTemplateType
+  type: has_one
+  via: permission_template
+- from: OrganizationMembership
+  to: User
+  type: has_one
+  via: user
+- from: UserGroup
+  to: OnboardingFlow
+  type: has_one
+  via: onboarding_flow
+- from: UserGroup
+  to: RecurringForm
+  type: has_many
+  via: recurring_forms
+- from: UserGroup
+  to: User
+  type: has_one
+  via: user
+- from: UserGroup
+  to: User
+  type: has_many
+  via: users
+- from: UserGroup
+  to: User
+  type: has_many
+  via: users_with_membership
+- from: Appointment
+  to: AppointmentType
+  type: has_one
+  via: appointment_type
+- from: Appointment
+  to: UserGroup
+  type: has_many
+  via: assigned_groups
+- from: Appointment
+  to: AppointmentInclusionType
+  type: has_many
+  via: attended_clients
+- from: Appointment
+  to: User
+  type: has_many
+  via: attendees
+- from: Appointment
+  to: User
+  type: has_many
+  via: attendees_on_waitlist
+- from: Appointment
+  to: CancellationReason
+  type: has_one
+  via: cancellation_reason
+- from: Appointment
+  to: FormAnswerGroup
+  type: has_one
+  via: filled_embed_form
+- from: Appointment
+  to: FormAnswerGroup
+  type: has_one
+  via: form_answer_group
+- from: Appointment
+  to: FormAnswerGroup
+  type: has_many
+  via: form_answer_groups
+- from: Appointment
+  to: GeneratedFormAnswerGroupType
+  type: has_one
+  via: generated_form_answer_group
+- from: Appointment
+  to: GeneratedSummary
+  type: has_one
+  via: generated_summary
+- from: Appointment
+  to: AppointmentPricingInfoType
+  type: has_one
+  via: pricing_info
+- from: Appointment
+  to: User
+  type: has_one
+  via: provider
+- from: Appointment
+  to: User
+  type: has_many
+  via: providers
+- from: Appointment
+  to: RecurringAppointment
+  type: has_one
+  via: recurring_appointment
+- from: Appointment
+  to: RequestedPayment
+  type: has_one
+  via: requested_payment
+- from: Appointment
+  to: Transcript
+  type: has_many
+  via: transcripts
+- from: Appointment
+  to: User
+  type: has_one
+  via: user
+- from: Appointment
+  to: ZoomAppointment
+  type: has_one
+  via: zoom_appointment
+- from: Appointment
+  to: ZoomCloudRecordingFile
+  type: has_many
+  via: zoom_cloud_recording_files
+- from: Appointment
+  to: ZoomCoHostLink
+  type: has_many
+  via: zoom_co_host_links
+- from: AppointmentType
+  to: AppointmentAutocompleteForm
+  type: has_one
+  via: appointment_autocomplete_form
+- from: AppointmentType
+  to: AppointmentSetting
+  type: has_one
+  via: appointment_setting
+- from: AppointmentType
+  to: AppointmentTypeCptCodeType
+  type: has_one
+  via: appointment_type_cpt_code
+- from: AppointmentType
+  to: UserGroup
+  type: has_many
+  via: bookable_groups
+- from: AppointmentType
+  to: AppointmentTypeFormConnection
+  type: has_many
+  via: form_requests_after_appointment
+- from: AppointmentType
+  to: AppointmentTypeFormConnection
+  type: has_many
+  via: form_requests_after_appointment_booking
+- from: AppointmentType
+  to: AppointmentTypeFormConnection
+  type: has_many
+  via: form_requests_before_appointment
+- from: AppointmentType
+  to: PriceAndCptPriceType
+  type: has_one
+  via: price_and_cpt_price
+- from: AppointmentType
+  to: AppointmentPricingInfoType
+  type: has_one
+  via: pricing_info
+- from: AppointmentType
+  to: ProviderApptTypeConnection
+  type: has_many
+  via: provider_appt_type_connections
+- from: AppointmentType
+  to: UserGroup
+  type: has_one
+  via: user_group
+- from: AppointmentSetting
+  to: AcceptedInsurancePlan
+  type: has_many
+  via: accepted_insurance_plans
+- from: AppointmentSetting
+  to: AppointmentLocation
+  type: has_many
+  via: appointment_locations
+- from: AppointmentSetting
+  to: CalendarColorScheme
+  type: has_many
+  via: calendar_color_schemes
+- from: AppointmentSetting
+  to: ContactType
+  type: has_many
+  via: contact_type_overrides
+- from: AppointmentSetting
+  to: CustomModuleForm
+  type: has_one
+  via: default_group_charting_template
+- from: AppointmentSetting
+  to: User
+  type: has_one
+  via: owner
+- from: AppointmentSetting
+  to: VideoUrlDefault
+  type: has_one
+  via: video_url_default
+- from: Availability
+  to: AppointmentType
+  type: has_many
+  via: appointment_types
+- from: Availability
+  to: User
+  type: has_one
+  via: user
+- from: RecurringAppointment
+  to: AppointmentPaginationConnection
+  type: has_one
+  via: appointments
+- from: Location
+  to: PlaceOfService
+  type: has_one
+  via: place_of_service
+- from: Location
+  to: User
+  type: has_one
+  via: user
+- from: AppointmentLocation
+  to: Room
+  type: has_many
+  via: rooms
+- from: CustomModuleForm
+  to: CustomModule
+  type: has_many
+  via: custom_modules
+- from: CustomModuleForm
+  to: FormAnswerGroup
+  type: has_many
+  via: form_answer_groups
+- from: CustomModuleForm
+  to: User
+  type: has_one
+  via: last_updated_by_user
+- from: CustomModuleForm
+  to: User
+  type: has_one
+  via: user
+- from: CustomModule
+  to: CustomModuleConditionType
+  type: has_one
+  via: custom_module_condition
+- from: CustomModule
+  to: CustomModuleForm
+  type: has_one
+  via: custom_module_form
+- from: CustomModule
+  to: FileAttachment
+  type: has_one
+  via: file_attachment
+- from: FormAnswerGroup
+  to: Appointment
+  type: has_one
+  via: appointment
+- from: FormAnswerGroup
+  to: AutoscoredSectionType
+  type: has_many
+  via: autoscored_sections
+- from: FormAnswerGroup
+  to: ChartingNoteAddendumType
+  type: has_many
+  via: charting_note_addendums
+- from: FormAnswerGroup
+  to: Cms1500
+  type: has_one
+  via: cms1500
+- from: FormAnswerGroup
+  to: GeneratedSummary
+  type: has_one
+  via: current_summary
+- from: FormAnswerGroup
+  to: CustomModuleForm
+  type: has_one
+  via: custom_module_form
+- from: FormAnswerGroup
+  to: Document
+  type: has_many
+  via: documents
+- from: FormAnswerGroup
+  to: User
+  type: has_one
+  via: filler
+- from: FormAnswerGroup
+  to: FormAnswerGroupAuditEvent
+  type: has_many
+  via: form_answer_group_audit_events
+- from: FormAnswerGroup
+  to: Prescription
+  type: has_many
+  via: form_answer_group_prescriptions
+- from: FormAnswerGroup
+  to: FormAnswerGroupSigning
+  type: has_many
+  via: form_answer_group_signings
+- from: FormAnswerGroup
+  to: FormAnswerGroupUserConnection
+  type: has_many
+  via: form_answer_group_users_connections
+- from: FormAnswerGroup
+  to: FormAnswer
+  type: has_many
+  via: form_answers
+- from: FormAnswerGroup
+  to: User
+  type: has_many
+  via: group_appointment_attendees
+- from: FormAnswerGroup
+  to: IndividualClientType
+  type: has_many
+  via: individual_client_notes
+- from: FormAnswerGroup
+  to: IndividualClientType
+  type: has_one
+  via: individual_note
+- from: FormAnswerGroup
+  to: LabOrder
+  type: has_many
+  via: lab_orders
+- from: FormAnswerGroup
+  to: User
+  type: has_one
+  via: locked_by
+- from: FormAnswerGroup
+  to: NarxCheck
+  type: has_many
+  via: narx_checks
+- from: FormAnswerGroup
+  to: Offering
+  type: has_one
+  via: offering_with_recommended_products
+- from: FormAnswerGroup
+  to: RequestedFormCompletion
+  type: has_one
+  via: requested_form_completion
+- from: FormAnswerGroup
+  to: User
+  type: has_one
+  via: user
+- from: FormAnswer
+  to: CustomModule
+  type: has_one
+  via: custom_module
+- from: FormAnswer
+  to: FileAttachment
+  type: has_many
+  via: file_attachments
+- from: FormAnswer
+  to: FormAnswerGroup
+  type: has_one
+  via: form_answer_group
+- from: CarePlan
+  to: User
+  type: has_one
+  via: creator
+- from: CarePlan
+  to: Document
+  type: has_many
+  via: documents
+- from: CarePlan
+  to: FeatureToggle
+  type: has_one
+  via: feature_toggle
+- from: CarePlan
+  to: Goal
+  type: has_many
+  via: goals
+- from: CarePlan
+  to: User
+  type: has_one
+  via: patient
+- from: CarePlan
+  to: Recommendation
+  type: has_many
+  via: recommendations
+- from: CarePlan
+  to: UserGroup
+  type: has_one
+  via: user_group
+- from: Goal
+  to: User
+  type: has_one
+  via: created_user
+- from: Goal
+  to: GoalHistory
+  type: has_many
+  via: goal_histories
+- from: Goal
+  to: Reminder
+  type: has_one
+  via: reminder
+- from: Goal
+  to: GoalStreakInfo
+  type: has_many
+  via: streak_info
+- from: Goal
+  to: Goal
+  type: has_many
+  via: subgoals
+- from: Goal
+  to: User
+  type: has_one
+  via: user
+- from: GoalHistory
+  to: Goal
+  type: has_one
+  via: goal
+- from: GoalHistory
+  to: User
+  type: has_one
+  via: user
+- from: Entry
+  to: User
+  type: has_one
+  via: added_by_user
+- from: Entry
+  to: Comment
+  type: has_many
+  via: comments
+- from: Entry
+  to: Meal
+  type: has_many
+  via: meals
+- from: Entry
+  to: User
+  type: has_one
+  via: poster
+- from: Entry
+  to: Entry
+  type: has_many
+  via: subentries
+- from: AllergySensitivity
+  to: User
+  type: has_one
+  via: created_by
+- from: Diagnosis
+  to: IcdCode
+  type: has_one
+  via: icd_code
+- from: Diagnosis
+  to: User
+  type: has_one
+  via: user
+- from: LabOrder
+  to: Document
+  type: has_one
+  via: document
+- from: LabOrder
+  to: FormAnswerGroup
+  type: has_one
+  via: form_answer_group
+- from: LabOrder
+  to: LabOption
+  type: has_many
+  via: lab_options
+- from: LabOrder
+  to: LabResult
+  type: has_many
+  via: lab_results
+- from: LabOrder
+  to: User
+  type: has_one
+  via: orderer
+- from: LabOrder
+  to: User
+  type: has_one
+  via: patient
+- from: LabOrder
+  to: Document
+  type: has_one
+  via: pdf_document
+- from: LabOrder
+  to: Document
+  type: has_one
+  via: requisition_document
+- from: LabOrder
+  to: User
+  type: has_one
+  via: reviewing_provider
+- from: Cms1500
+  to: Organization
+  type: has_one
+  via: billing_provider
+- from: Cms1500
+  to: ClaimMdMessage
+  type: has_many
+  via: claim_md_rejection_messages
+- from: Cms1500
+  to: ClaimSubmission
+  type: has_many
+  via: claim_submissions
+- from: Cms1500
+  to: Cms1500Policy
+  type: has_many
+  via: cms1500_policies
+- from: Cms1500
+  to: CptCodesCms1500
+  type: has_many
+  via: cpt_codes_cms1500s
+- from: Cms1500
+  to: EraConnection
+  type: has_one
+  via: eras
+- from: Cms1500
+  to: CptCodesCms1500
+  type: has_many
+  via: estimated_cpt_fees_for_user
+- from: Cms1500
+  to: IcdCodesCms1500
+  type: has_many
+  via: icd_codes_cms1500s
+- from: Cms1500
+  to: OrganizationInfo
+  type: has_one
+  via: org_info
+- from: Cms1500
+  to: User
+  type: has_one
+  via: patient
+- from: Cms1500
+  to: ReferralInfo
+  type: has_one
+  via: referral_info
+- from: Cms1500
+  to: User
+  type: has_one
+  via: rendering_provider
+- from: Cms1500
+  to: OtherIdNumber
+  type: has_one
+  via: rendering_provider_other_id_object
+- from: Cms1500
+  to: Location
+  type: has_one
+  via: service_location
+- from: Claim
+  to: ClaimProvider
+  type: has_one
+  via: billing_provider
+- from: Claim
+  to: ClaimMdMessage
+  type: has_many
+  via: claim_md_rejection_messages
+- from: Claim
+  to: ClaimSubmissionPaginationConnection
+  type: has_one
+  via: claim_submissions
+- from: Claim
+  to: CoordinationOfBenefits
+  type: has_one
+  via: coordination_of_benefits
+- from: Claim
+  to: ClaimPaginationConnection
+  type: has_one
+  via: correction_claims
+- from: Claim
+  to: ClaimDiagnosis
+  type: has_many
+  via: diagnoses
+- from: Claim
+  to: OrganizationInfo
+  type: has_one
+  via: org_info
+- from: Claim
+  to: Claim
+  type: has_one
+  via: original_claim
+- from: Claim
+  to: ClaimPatient
+  type: has_one
+  via: patient
+- from: Claim
+  to: ClaimPolicy
+  type: has_many
+  via: policies
+- from: Claim
+  to: Claim
+  type: has_one
+  via: primary_claim
+- from: Claim
+  to: ClaimReferralInfo
+  type: has_one
+  via: referral_info
+- from: Claim
+  to: ClaimProvider
+  type: has_one
+  via: referring_provider
+- from: Claim
+  to: ClaimProvider
+  type: has_one
+  via: rendering_provider
+- from: Claim
+  to: ClaimServiceLine
+  type: has_many
+  via: service_lines
+- from: Claim
+  to: ClaimLocation
+  type: has_one
+  via: service_location
+- from: Policy
+  to: Benefit
+  type: has_many
+  via: benefits
+- from: Policy
+  to: CallReference
+  type: has_one
+  via: call_reference
+- from: Policy
+  to: ClaimEligibilityCheckErrors
+  type: has_many
+  via: claim_eligibility_check_errors
+- from: Policy
+  to: CptCodesPolicy
+  type: has_many
+  via: cpt_codes_policies
+- from: Policy
+  to: Location
+  type: has_one
+  via: holder_location
+- from: Policy
+  to: IcdCodesPolicy
+  type: has_many
+  via: icd_codes_policies
+- from: Policy
+  to: InsuranceAuthorizationType
+  type: has_one
+  via: insurance_authorization
+- from: Policy
+  to: InsurancePlan
+  type: has_one
+  via: insurance_plan
+- from: Policy
+  to: ClaimEligibilityCheck
+  type: has_one
+  via: last_eligibility_check
+- from: Policy
+  to: EligibilityCheck
+  type: has_one
+  via: latest_eligibility_check
+- from: Policy
+  to: Location
+  type: has_one
+  via: payer_location
+- from: Policy
+  to: Referral
+  type: has_one
+  via: referral
+- from: Policy
+  to: User
+  type: has_one
+  via: user
+- from: InsurancePlan
+  to: Location
+  type: has_one
+  via: default_payer_location
+- from: InsurancePlan
+  to: User
+  type: has_one
+  via: user
+- from: AcceptedInsurancePlan
+  to: InsurancePlan
+  type: has_one
+  via: insurance_plan
+- from: BillingItem
+  to: ChargeBack
+  type: has_many
+  via: charge_backs
+- from: BillingItem
+  to: Offering
+  type: has_one
+  via: offering
+- from: BillingItem
+  to: OfferingCoupon
+  type: has_one
+  via: offering_coupon
+- from: BillingItem
+  to: User
+  type: has_one
+  via: provider
+- from: BillingItem
+  to: User
+  type: has_one
+  via: recipient
+- from: BillingItem
+  to: RecurringPayment
+  type: has_one
+  via: recurring_payment
+- from: BillingItem
+  to: RefundItem
+  type: has_many
+  via: refund_items
+- from: BillingItem
+  to: RequestedPayer
+  type: has_one
+  via: requested_payer
+- from: BillingItem
+  to: RequestedPayment
+  type: has_one
+  via: requested_payment
+- from: BillingItem
+  to: User
+  type: has_one
+  via: sender
+- from: BillingItem
+  to: BillingItem
+  type: has_one
+  via: successful_retried_payment
+- from: BillingItem
+  to: UserPackageSelection
+  type: has_one
+  via: user_package_selection
+- from: RequestedPayment
+  to: Appointment
+  type: has_one
+  via: appointment
+- from: RequestedPayment
+  to: BillingItem
+  type: has_many
+  via: billing_items
+- from: RequestedPayment
+  to: InvoiceCms1500LineItem
+  type: has_many
+  via: cms1500_line_items
+- from: RequestedPayment
+  to: Offering
+  type: has_one
+  via: offering
+- from: RequestedPayment
+  to: RequestedPayer
+  type: has_one
+  via: other_requested_payer
+- from: RequestedPayment
+  to: User
+  type: has_one
+  via: recipient
+- from: RequestedPayment
+  to: RequestedPayer
+  type: has_one
+  via: requested_payer
+- from: RequestedPayment
+  to: RequestedPaymentTemplate
+  type: has_one
+  via: requested_payment_template
+- from: RequestedPayment
+  to: User
+  type: has_one
+  via: sender
+- from: RequestedPayment
+  to: UserPackageSelection
+  type: has_one
+  via: user_package_selection
+- from: RequestedPayment
+  to: WriteOff
+  type: has_many
+  via: write_offs
+- from: Offering
+  to: MealPlan
+  type: has_many
+  via: meal_plan_options
+- from: Offering
+  to: OfferingCourse
+  type: has_many
+  via: offering_courses
+- from: Offering
+  to: OfferingGroupVisibility
+  type: has_many
+  via: offering_group_visibilities
+- from: Offering
+  to: OfferingImage
+  type: has_one
+  via: offering_image
+- from: Offering
+  to: OfferingInclude
+  type: has_many
+  via: offering_includes
+- from: Offering
+  to: OfferingLabOption
+  type: has_many
+  via: offering_lab_options
+- from: Offering
+  to: OfferingProduct
+  type: has_many
+  via: offering_products
+- from: Offering
+  to: User
+  type: has_one
+  via: user
+- from: CourseMembership
+  to: Course
+  type: has_one
+  via: course
+- from: CourseMembership
+  to: CourseItem
+  type: has_one
+  via: next_incomplete_item
+- from: CourseMembership
+  to: CourseItem
+  type: has_one
+  via: next_next_incomplete_item
+- from: CourseMembership
+  to: User
+  type: has_one
+  via: user
+- from: Course
+  to: CourseMembership
+  type: has_many
+  via: clients
+- from: Course
+  to: CourseGroup
+  type: has_many
+  via: clients_groups
+- from: Course
+  to: CourseBenefit
+  type: has_many
+  via: course_benefits
+- from: Course
+  to: CourseGroup
+  type: has_many
+  via: course_groups
+- from: Course
+  to: CourseItem
+  type: has_many
+  via: course_items
+- from: Course
+  to: CourseMembership
+  type: has_many
+  via: course_memberships
+- from: Course
+  to: Offering
+  type: has_many
+  via: offerings
+- from: Course
+  to: CourseMembership
+  type: has_many
+  via: ungrouped_course_memberships
+- from: Course
+  to: UserGroup
+  type: has_many
+  via: user_groups
+- from: Course
+  to: User
+  type: has_many
+  via: users
+- from: CourseGroup
+  to: Course
+  type: has_one
+  via: course
+- from: CourseGroup
+  to: UserGroup
+  type: has_one
+  via: user_group
+- from: CourseItem
+  to: CompletedCourseItem
+  type: has_one
+  via: completed_course_item
+- from: CourseItem
+  to: Course
+  type: has_one
+  via: course
+- from: CourseItem
+  to: CourseItem
+  type: has_one
+  via: first_incomplete_required_module
+- from: CourseItem
+  to: CourseItem
+  type: has_one
+  via: next_item
+- from: CourseItem
+  to: CourseItem
+  type: has_one
+  via: prev_item
+- from: Conversation
+  to: User
+  type: has_one
+  via: closed_by
+- from: Conversation
+  to: ConversationMembership
+  type: has_many
+  via: conversation_memberships
+- from: Conversation
+  to: ConversationMembership
+  type: has_one
+  via: current_user_conversation_membership
+- from: Conversation
+  to: User
+  type: has_many
+  via: first_four_invitees
+- from: Conversation
+  to: User
+  type: has_many
+  via: invitees
+- from: Conversation
+  to: Note
+  type: has_many
+  via: notes
+- from: Conversation
+  to: User
+  type: has_one
+  via: owner
+- from: Conversation
+  to: UserGroup
+  type: has_many
+  via: user_groups
+- from: Note
+  to: User
+  type: has_one
+  via: creator
+- from: Note
+  to: User
+  type: has_one
+  via: on_behalf_user
+- from: Note
+  to: Task
+  type: has_one
+  via: task
+- from: ConversationMembership
+  to: Conversation
+  type: has_one
+  via: convo
+- from: ConversationMembership
+  to: User
+  type: has_one
+  via: convo_updated_at
+- from: ConversationMembership
+  to: User
+  type: has_one
+  via: creator
+- from: ConversationMembership
+  to: Task
+  type: has_one
+  via: last_task
+- from: Document
+  to: DocumentDraft
+  type: has_one
+  via: draft
+- from: Document
+  to: FormAnswerGroup
+  type: has_many
+  via: form_answer_groups
+- from: Document
+  to: DocumentViewing
+  type: has_many
+  via: opens
+- from: Document
+  to: User
+  type: has_one
+  via: owner
+- from: Document
+  to: User
+  type: has_one
+  via: rel_user
+- from: Document
+  to: UserConnection
+  type: has_one
+  via: shareable_org_members
+- from: Document
+  to: UserConnection
+  type: has_one
+  via: shareable_patients
+- from: Document
+  to: UserGroupPaginationConnection
+  type: has_one
+  via: shareable_user_groups
+- from: Document
+  to: UserGroup
+  type: has_many
+  via: user_groups
+- from: Document
+  to: User
+  type: has_many
+  via: users
+- from: Task
+  to: UserConnection
+  type: has_one
+  via: assignees
+- from: Task
+  to: User
+  type: has_one
+  via: client
+- from: Task
+  to: InternalCommentPaginationConnection
+  type: has_one
+  via: comments
+- from: Task
+  to: User
+  type: has_one
+  via: completed_by
+- from: Task
+  to: User
+  type: has_one
+  via: creator
+- from: Task
+  to: Note
+  type: has_one
+  via: note
+- from: Task
+  to: Reminder
+  type: has_one
+  via: reminder
+- from: Task
+  to: User
+  type: has_one
+  via: user
+- from: SentFax
+  to: User
+  type: has_one
+  via: patient
+- from: SentFax
+  to: User
+  type: has_one
+  via: sender
+- from: Announcement
+  to: User
+  type: has_one
+  via: last_toggled_by
+- from: Announcement
+  to: User
+  type: has_one
+  via: user
+- from: Tag
+  to: User
+  type: has_many
+  via: tagged_users
+- from: Tag
+  to: User
+  type: has_one
+  via: user
+- from: Webhook
+  to: WebhookEvent
+  type: has_many
+  via: webhook_events
