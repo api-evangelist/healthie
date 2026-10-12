@@ -141,7 +141,6 @@
   arazzo: null
 - slug: healthie-orderly-health
   label: Orderly Health
-  partner: orderly-health
   partner_name: Orderly Health
   type: marketplace
   marketplace: healthie-harbor
