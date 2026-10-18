@@ -58,6 +58,33 @@ tags:
 - Claims
 - Clinical
 - Digital Health
+- Electronic Health Records
+- Forms
+- GraphQL
+- Health Tech
+- Healthcare
+- Insurance
+- Intake
+- Online Programs
+- Patient Engagement
+- Patient Portal
+- Practice Management
+- Programs
+- Scheduling
+- Telehealth
+- Wellness
+- Webhook
+- Real-Time
+- FHIR
+tags_raw:
+- API-First
+- Appointments
+- Billing
+- Care Plans
+- Charting
+- Claims
+- Clinical
+- Digital Health
 - EHR
 - EMR
 - Forms
@@ -447,7 +474,7 @@ apis:
   - Charting
   - Claims
   - Clients
-  - EHR
+  - Electronic Health Records
   - Forms
   - GraphQL
   - Healthcare
